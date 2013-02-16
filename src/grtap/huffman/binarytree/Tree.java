@@ -1,21 +1,23 @@
 package grtap.huffman.binarytree;
 
 public class Tree implements Comparable<Tree> {
-	private Node root;
-	private int priority;
+	private Node	root;
+	private int		priority;
 
-	public Tree(char val) {
+	// Build a Tree with one value
+	public Tree(final char val, final int priority) {
 		setRoot(new Leaf(val));
-		setPriority(1);
+		setPriority(priority);
 	}
 
-	public Tree(Tree left, Tree right) {
+	// Build a Tree from 2 Trees
+	public Tree(final Tree left, final Tree right) {
 		setRoot(new BinaryNode(left.getRoot(), right.getRoot()));
 		setPriority(left.getPriority() + right.getPriority());
 	}
 
 	@Override
-	public int compareTo(Tree o) {
+	public int compareTo(final Tree o) {
 		return Integer.compare(getPriority(), o.getPriority());
 	}
 
@@ -25,7 +27,7 @@ public class Tree implements Comparable<Tree> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -35,9 +37,9 @@ public class Tree implements Comparable<Tree> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Tree other = (Tree) obj;
+		final Tree other = (Tree) obj;
 		if (getRoot() == null) {
-			if (other.getRoot()!= null) {
+			if (other.getRoot() != null) {
 				return false;
 			}
 		} else if (!getRoot().equals(other.getRoot())) {
@@ -51,7 +53,7 @@ public class Tree implements Comparable<Tree> {
 		return root;
 	}
 
-	private void setRoot(Node newRoot) {
+	private void setRoot(final Node newRoot) {
 		root = newRoot;
 	}
 
@@ -59,7 +61,7 @@ public class Tree implements Comparable<Tree> {
 		return priority;
 	}
 
-	private void setPriority(int newPriority) {
+	private void setPriority(final int newPriority) {
 		priority = newPriority;
 	}
 }
