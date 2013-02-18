@@ -1,16 +1,18 @@
 package grtap.huffman.binarytree;
 
+
 // This class represents the case where we have no children
 public class Leaf extends Node {
     private char val;
 
-    public Leaf(final char val) {
-        setVal(val);
+    public Leaf(final char newVal) {
+        val = newVal;
+        type = Type.LEAF;
     }
 
     @Override
     public int hashCode() {
-        return getVal();
+        return val;
     }
 
     @Override
@@ -25,18 +27,14 @@ public class Leaf extends Node {
             return false;
         }
         final Leaf other = (Leaf) obj;
-        if (getVal() != other.getVal()) {
+        if (val != other.val) {
             return false;
         }
         return true;
     }
 
     // Getters / Setters
-    private char getVal() {
+    public char getVal() {
         return val;
-    }
-
-    private void setVal(final char newVal) {
-        val = newVal;
     }
 }

@@ -1,8 +1,11 @@
 package grtap.huffman.binarytree;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Tree implements Comparable<Tree> {
-	private Node	root;
-	private int		priority;
+	private Node root;
+	private int priority;
 
 	// Build a Tree with one value
 	public Tree(final char val, final int priority) {
@@ -14,6 +17,11 @@ public class Tree implements Comparable<Tree> {
 	public Tree(final Tree left, final Tree right) {
 		setRoot(new BinaryNode(left.getRoot(), right.getRoot()));
 		setPriority(left.getPriority() + right.getPriority());
+	}
+
+	public Map<Character, String> getCharacterCodes() {
+		Map<Character, String> map = new HashMap<Character, String>();
+		return ((BinaryNode) root).getCharacterCodes(map, new String());
 	}
 
 	@Override
