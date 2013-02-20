@@ -1,12 +1,13 @@
 package grtap.huffman.binarytree;
 
-import java.util.BitSet;
+import grtap.huffman.util.BitArray;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Tree implements Comparable<Tree> {
-	private Node root;
-	private int priority;
+	private Node	root;
+	private int		priority;
 
 	// Build a Tree with one value
 	public Tree(final char val, final int priority) {
@@ -20,21 +21,20 @@ public class Tree implements Comparable<Tree> {
 		setPriority(left.getPriority() + right.getPriority());
 	}
 
-	public Map<Character, BitSet> getCharacterCodes() {
-		Map<Character, BitSet> map = new HashMap<Character, BitSet>();
+	public Map<Character, BitArray> getCharacterCodes() {
+		final Map<Character, BitArray> map = new HashMap<Character, BitArray>();
 		if (root.isLeaf()) {
-			BitSet bits = new BitSet();
-			bits.set(0);
+			final BitArray bits = new BitArray();
 			map.put(((Leaf) root).getVal(), bits);
 			return map;
 		} else {
-			return ((BinaryNode) root).getCharacterCodes(map, new BitSet());
+			return ((BinaryNode) root).getCharacterCodes(map, new BitArray());
 		}
 	}
 
 	@Override
 	public int compareTo(final Tree o) {
-		int res = Integer.compare(getPriority(), o.getPriority());
+		final int res = Integer.compare(getPriority(), o.getPriority());
 		return res > 0 ? 1 : -1;
 	}
 
