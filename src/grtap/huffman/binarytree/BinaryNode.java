@@ -1,5 +1,6 @@
 package grtap.huffman.binarytree;
 
+import java.util.BitSet;
 import java.util.Map;
 
 // This class represents a Node which have 2 children
@@ -13,16 +14,18 @@ public class BinaryNode extends Node {
 		type = Type.BINARYNODE;
 	}
 
-	public Map<Character, String> getCharacterCodes(Map<Character, String> map, String codePrefix) {
+	public Map<Character, BitSet> getCharacterCodes(Map<Character, String> map, BitSet codePrefix) {
 		if (left.isLeaf()) {
+			BitSet newCodePrefix = (BitSet) codePrefix.clone();
+			newCodePrefix.set(newCodePrefix.len)
 			map.put(((Leaf) left).getVal(), codePrefix + '0');
 		} else {
-			((BinaryNode) left).getCharacterCodes(map, codePrefix + '0');
+			map = ((BinaryNode) left).getCharacterCodes(map, codePrefix + '0');
 		}
 		if (right.isLeaf()) {
 			map.put(((Leaf) right).getVal(), codePrefix + '1');
 		} else {
-			((BinaryNode) right).getCharacterCodes(map, codePrefix + '1');
+			map = ((BinaryNode) right).getCharacterCodes(map, codePrefix + '1');
 		}
 		return map;
 	}
