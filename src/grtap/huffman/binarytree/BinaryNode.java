@@ -1,11 +1,13 @@
 package grtap.huffman.binarytree;
 
+import grtap.huffman.util.BitArray;
+
 import java.util.Map;
 
 // This class represents a Node which have 2 children
 // It may represents the case where we have only one child, as this is rare enough
 public class BinaryNode extends Node {
-	private Node left, right;
+	private final Node	left, right;
 
 	public BinaryNode(final Node leftChild, final Node rightChild) {
 		left = leftChild;
@@ -13,16 +15,16 @@ public class BinaryNode extends Node {
 		type = Type.BINARYNODE;
 	}
 
-	public Map<Character, String> getCharacterCodes(Map<Character, String> map, String codePrefix) {
+	public Map<Character, BitArray> getCharacterCodes(Map<Character, BitArray> map, final BitArray codePrefix) {
 		if (left.isLeaf()) {
-			map.put(((Leaf) left).getVal(), codePrefix + '0');
+			map.put(((Leaf) left).getVal(), codePrefix.clone().add(0));
 		} else {
-			((BinaryNode) left).getCharacterCodes(map, codePrefix + '0');
+			map = ((BinaryNode) left).getCharacterCodes(map, codePrefix.add(0));
 		}
 		if (right.isLeaf()) {
-			map.put(((Leaf) right).getVal(), codePrefix + '1');
+			map.put(((Leaf) right).getVal(), codePrefix.clone().add(1));
 		} else {
-			((BinaryNode) right).getCharacterCodes(map, codePrefix + '1');
+			map = ((BinaryNode) right).getCharacterCodes(map, codePrefix.add(1));
 		}
 		return map;
 	}

@@ -59,17 +59,17 @@ public class HuffmanCode {
 	}
 
 	// The call is always made with an existing file
-	private static HashMap<Character, Integer> countCharactersInFile(Path pathToFile) {
+	public static HashMap<Character, Integer> countCharactersInFile(Path pathToFile) {
 		final HashMap<Character, Integer> characterMap = new HashMap<Character, Integer>();
 		try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
-			char c = (char) reader.read();
-			while (c != -1) { // TODO C'est pas -1
+			char c;
+			while (reader.ready()) {
+				c = (char) reader.read();
 				if (characterMap.containsKey(c)) {
 					characterMap.put(c, characterMap.get(c) + 1);
 				} else {
 					characterMap.put(c, 1);
 				}
-				c = (char) reader.read();
 			}
 		} catch (final IOException e) {
 			e.printStackTrace();
