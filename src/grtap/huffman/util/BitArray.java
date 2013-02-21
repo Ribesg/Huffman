@@ -69,7 +69,7 @@ public class BitArray {
 
 	// Set the bit at position 'pos' to 1 in the byte 'b'
 	private byte set(final byte b, final int pos) {
-		return (byte) (b | 1 << pos);
+		return (byte) (b | 1 << (Byte.SIZE - pos));
 	}
 
 	// TODO CA BUG

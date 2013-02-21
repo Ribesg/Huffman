@@ -18,9 +18,9 @@ public class Main {
 		 */
 		final Random r = new Random();
 		final BitArray array = new BitArray();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			array.add(r.nextInt(2));
-			System.out.println(array.length() + ";" + array);
+			System.out.println(array.length() + ";" +'\t' + array);
 		}
 	}
 
