@@ -8,9 +8,9 @@ public class Main {
 
 	public static void main(final String[] args) {
 		/*
-		 * final Tree tree = HuffmanCode.buildTree(Paths.get("test.txt")); final
+		 * final Tree tree = HuffmanEncoder.buildTree(Paths.get("test.txt")); final
 		 * Map<Character, Integer> map =
-		 * HuffmanCode.countCharactersInFile(Paths.get("test.txt")); for (final
+		 * HuffmanEncoder.countCharactersInFile(Paths.get("test.txt")); for (final
 		 * Entry<Character, BitArray> e : tree.getCharacterCodes().entrySet()) {
 		 * printChar(e.getKey()); System.out.print(" : ");
 		 * System.out.print(map.get(e.getKey())); System.out.print(" : ");

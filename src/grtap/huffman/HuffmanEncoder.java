@@ -1,4 +1,4 @@
-package grtap.huffman.huffmantree;
+package grtap.huffman;
 
 import grtap.huffman.binarytree.Tree;
 
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-public class HuffmanCode {
+public class HuffmanEncoder {
 
 	public static void encode(Path originalFile, Path encodedFile) {
 		encode(originalFile, encodedFile, false);
@@ -29,10 +29,6 @@ public class HuffmanCode {
 		}
 
 		// Tree huffmanTree = buildTree(originalFile);
-	}
-
-	public static void decode(Path originalFile, Path decodedFile) {
-
 	}
 
 	public static Tree buildTree(final Path textFile) {
