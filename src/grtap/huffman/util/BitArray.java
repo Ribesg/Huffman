@@ -76,10 +76,20 @@ public class BitArray {
 	@Override
 	public String toString() {
 		final StringBuilder s = new StringBuilder(bits.length * Byte.SIZE);
+		
+		for(int i = 0; i < lastByte; i++){
+			final byte b = bits[i];
+			for(int j=0; j<Byte.SIZE;j++){
+				s.append((b & (1 << (Byte.SIZE - j))) == 0 ? '0' : '1');
+			}
+		}	
+		
+		
+		/*
 		for (int i = 0; i < Byte.SIZE * lastByte; i++) {
 			final byte b = bits[i / Byte.SIZE];
 			s.append((b << i % Byte.SIZE & 0x80) == 0 ? '0' : '1');
-		}
+		}*/
 		for (int i = 0; i < lastBit; i++) {
 			final byte b = bits[lastByte];
 			s.append((b << i & 0x80) == 0 ? '0' : '1');
