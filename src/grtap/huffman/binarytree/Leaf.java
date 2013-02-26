@@ -1,9 +1,8 @@
 package grtap.huffman.binarytree;
 
-
 // This class represents the case where we have no children
 public class Leaf extends Node {
-    private char val;
+    private final char val;
 
     public Leaf(final char newVal) {
         val = newVal;
