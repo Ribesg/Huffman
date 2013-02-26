@@ -14,18 +14,19 @@ public class BinaryNode extends Node {
         type = Type.BINARYNODE;
     }
 
+    @Override
     public Map<Character, BitArray> getCharacterCodes(Map<Character, BitArray> map, final BitArray codePrefix) {
         // First, clone the prefix before appending the 0 for the left operand
         if (left.isLeaf()) {
-            map.put(((Leaf) left).getVal(), codePrefix.cloneThenAdd(0));
+            map.put(left.getVal(), codePrefix.cloneThenAdd(0));
         } else {
-            map = ((BinaryNode) left).getCharacterCodes(map, codePrefix.cloneThenAdd(0));
+            map = left.getCharacterCodes(map, codePrefix.cloneThenAdd(0));
         }
         // Then, use the same BitArray object with and additional 1 for the right operand
         if (right.isLeaf()) {
-            map.put(((Leaf) right).getVal(), codePrefix.add(1));
+            map.put(right.getVal(), codePrefix.add(1));
         } else {
-            map = ((BinaryNode) right).getCharacterCodes(map, codePrefix.add(1));
+            map = right.getCharacterCodes(map, codePrefix.add(1));
         }
         return map;
     }
@@ -69,11 +70,18 @@ public class BinaryNode extends Node {
     }
 
     // Getters / Setters
+    @Override
     public Node getLeft() {
         return left;
     }
 
+    @Override
     public Node getRight() {
         return right;
+    }
+
+    @Override
+    public char getVal() {
+        throw new UnsupportedOperationException();
     }
 }

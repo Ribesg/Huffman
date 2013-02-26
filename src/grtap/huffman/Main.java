@@ -1,6 +1,7 @@
 package grtap.huffman;
 
 import grtap.huffman.binarytree.Tree;
+import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.BitArray;
 
 import java.nio.file.Paths;
@@ -13,7 +14,7 @@ public class Main {
 
         final Tree tree = HuffmanEncoder.buildTree(Paths.get("test.txt"));
 
-        tree.print();
+        TreePrinter.printTree(tree);
 
         final Map<Character, Integer> map = HuffmanEncoder.countCharactersInFile(Paths.get("test.txt"));
 

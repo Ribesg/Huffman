@@ -1,5 +1,9 @@
 package grtap.huffman.binarytree;
 
+import grtap.huffman.util.BitArray;
+
+import java.util.Map;
+
 // This abstract class represents any Node in the Tree
 public abstract class Node {
 
@@ -20,4 +24,16 @@ public abstract class Node {
     public boolean isLeaf() {
         return type == Type.LEAF;
     }
+
+    // Following methods are common to all Node
+    // To have a clear code without tons of casts
+    // /!\ Should never be called without a check to isLeaf() before
+
+    public abstract Node getLeft();
+
+    public abstract Node getRight();
+
+    public abstract char getVal();
+
+    public abstract Map<Character, BitArray> getCharacterCodes(final Map<Character, BitArray> map, final BitArray codePrefix);
 }

@@ -91,4 +91,38 @@ public class BitArray {
     public BitArray clone() {
         return new BitArray(this);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(bits);
+        result = prime * result + lastBit;
+        result = prime * result + lastByte;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BitArray other = (BitArray) obj;
+        if (!Arrays.equals(bits, other.bits)) {
+            return false;
+        }
+        if (lastBit != other.lastBit) {
+            return false;
+        }
+        if (lastByte != other.lastByte) {
+            return false;
+        }
+        return true;
+    }
 }

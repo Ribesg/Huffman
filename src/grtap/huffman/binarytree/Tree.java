@@ -6,41 +6,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Tree implements Comparable<Tree> {
-    private Node root;
-    private int  priority;
+    private final Node root;
+    private final int  priority;
 
     // Build a Tree with one value
-    public Tree(final char val, final int priority) {
-        setRoot(new Leaf(val));
-        setPriority(priority);
+    public Tree(final char val, final int prior) {
+        root = new Leaf(val);
+        priority = prior;
     }
 
     // Build a Tree from 2 Trees
     public Tree(final Tree left, final Tree right) {
-        setRoot(new BinaryNode(left.getRoot(), right.getRoot()));
-        setPriority(left.getPriority() + right.getPriority());
+        root = new BinaryNode(left.root, right.root);
+        priority = left.priority + right.priority;
     }
 
     public Map<Character, BitArray> getCharacterCodes() {
         final Map<Character, BitArray> map = new HashMap<Character, BitArray>();
         if (root.isLeaf()) {
             final BitArray bits = new BitArray();
-            map.put(((Leaf) root).getVal(), bits);
+            map.put(root.getVal(), bits);
             return map;
         } else {
-            return ((BinaryNode) root).getCharacterCodes(map, new BitArray());
+            return root.getCharacterCodes(map, new BitArray());
         }
     }
 
     @Override
     public int compareTo(final Tree o) {
-        final int res = Integer.compare(getPriority(), o.getPriority());
-        return res > 0 ? 1 : -1;
+        final int res = Integer.compare(priority, o.priority);
+        if (res == 0 && root.isLeaf() && o.root.isLeaf()) {
+            // Be sure we keep the same order for char with same priorities
+            return Character.compare(root.getVal(), o.root.getVal());
+        }
+        return res > 0 ? 1 : -1; // Do not return 0
     }
 
     @Override
     public int hashCode() {
-        return getRoot().hashCode();
+        return root.hashCode();
     }
 
     @Override
@@ -65,24 +69,8 @@ public class Tree implements Comparable<Tree> {
         return true;
     }
 
-    public void print() {
-        TreePrinter.printNode(root);
-    }
-
     // Getters / Setters
-    private Node getRoot() {
+    public Node getRoot() {
         return root;
-    }
-
-    private void setRoot(final Node newRoot) {
-        root = newRoot;
-    }
-
-    private int getPriority() {
-        return priority;
-    }
-
-    private void setPriority(final int newPriority) {
-        priority = newPriority;
     }
 }
