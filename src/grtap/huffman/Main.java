@@ -24,29 +24,6 @@ public class Main {
             System.out.print(" : ");
             System.out.println(e.getValue());
         }
-
-        final BitArray b = new BitArray();
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        b.add(1);
-        b.add(0);
-        System.out.println(b.length() + ";" + b);
     }
 
     private static void printChar(final char c) {

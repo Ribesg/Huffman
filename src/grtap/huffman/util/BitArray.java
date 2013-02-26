@@ -21,10 +21,7 @@ public class BitArray {
 
     // Creates a new BitArray with an initial number of BYTES
     public BitArray(final int initialCapacity) {
-        bits = new byte[initialCapacity];
-        for (int i = 0; i < bits.length; i++) {
-            bits[i] = 0;
-        }
+        bits = new byte[initialCapacity]; // Full of 0s
         lastByte = 0;
         lastBit = Byte.SIZE;
     }
