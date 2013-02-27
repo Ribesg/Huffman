@@ -57,6 +57,58 @@ public class HuffmanEncoder {
 
     // TODO make this private after testing
     // The call is always made with an existing file
+    // Faster with an int[] than with an HashMap ?
+    // Use an additional char buffer
+    public static HashMap<Character, Integer> countCharactersInFileFastCharBuffer(final Path pathToFile) {
+        final int[] characterCount = new int[256]; // Size of ANSI table
+        try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
+            final char[] buffer = new char[64];
+            int nb = -1;
+            while (reader.ready()) {
+                nb = reader.read(buffer);
+                for (int i = 0; i < nb; i++) {
+                    characterCount[buffer[i]]++;
+                }
+            }
+        } catch (final IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        final HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        for (int i = 0; i < characterCount.length; i++) {
+            final int count = characterCount[i];
+            if (count > 0) {
+                map.put((char) i, count);
+            }
+        }
+        return map;
+    }
+
+    // TODO make this private after testing
+    // The call is always made with an existing file
+    // Faster with an int[] than with an HashMap ?
+    public static HashMap<Character, Integer> countCharactersInFileFast(final Path pathToFile) {
+        final int[] characterCount = new int[256]; // Size of ANSI table
+        try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
+            while (reader.ready()) {
+                characterCount[reader.read()]++;
+            }
+        } catch (final IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        final HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        for (int i = 0; i < characterCount.length; i++) {
+            final int count = characterCount[i];
+            if (count > 0) {
+                map.put((char) i, count);
+            }
+        }
+        return map;
+    }
+
+    // TODO make this private after testing
+    // The call is always made with an existing file
     public static HashMap<Character, Integer> countCharactersInFile(final Path pathToFile) {
         final HashMap<Character, Integer> characterMap = new HashMap<Character, Integer>();
         try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
