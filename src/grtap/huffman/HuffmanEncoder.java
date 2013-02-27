@@ -109,6 +109,32 @@ public class HuffmanEncoder {
 
     // TODO make this private after testing
     // The call is always made with an existing file
+    public static HashMap<Character, Integer> countCharactersInFileCharBuffer(final Path pathToFile) {
+        final HashMap<Character, Integer> characterMap = new HashMap<Character, Integer>();
+        try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
+            final char[] buffer = new char[64];
+            int nb = -1;
+            char c;
+            while (reader.ready()) {
+                nb = reader.read(buffer);
+                for (int i = 0; i < nb; i++) {
+                    c = buffer[i];
+                    if (characterMap.containsKey(c)) {
+                        characterMap.put(c, characterMap.get(c) + 1);
+                    } else {
+                        characterMap.put(c, 1);
+                    }
+                }
+            }
+        } catch (final IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        return characterMap;
+    }
+
+    // TODO make this private after testing
+    // The call is always made with an existing file
     public static HashMap<Character, Integer> countCharactersInFile(final Path pathToFile) {
         final HashMap<Character, Integer> characterMap = new HashMap<Character, Integer>();
         try (BufferedReader reader = Files.newBufferedReader(pathToFile, Charset.defaultCharset())) {
