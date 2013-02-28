@@ -5,12 +5,12 @@ public class Timer {
     private long startTime = -1, endTime = -1;
 
     public Timer start() {
-        startTime = System.nanoTime();
+        startTime = System.currentTimeMillis();
         return this;
     }
 
     public long stop() {
-        endTime = System.nanoTime();
+        endTime = System.currentTimeMillis();
         return getDiff();
     }
 
