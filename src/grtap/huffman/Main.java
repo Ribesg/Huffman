@@ -21,22 +21,34 @@ public class Main {
         final Path dictionarySource = Paths.get("dictionary2.txt");
         final Path dictionaryDest = Paths.get("dictionary2.txt.compressed");
 
+        final Path miserablesSource = Paths.get("LesMiserables.txt");
+        final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
+
         //System.out.println("Generating random file...");
         //random(testFromFile, 15_000, true);
 
         System.out.println("Encoding...");
         try {
-            final Timer t = new Timer().start();
-            //Encoder.encode(testFromFile, testToFile, true);
-            Encoder.encode(dictionarySource, dictionaryDest, true);
+            long time = 0;
+            for (int i = 0; i < 50; i++) {
+                final Timer t = new Timer().start();
+                //Encoder.encode(testFromFile, testToFile, true);
+                //          Encoder.encode(dictionarySource, dictionaryDest, true);
+                Encoder.encode(miserablesSource, miserablesDest, true);
+                t.stop();
+                time += t.nanoDiff();
+            }
             final DecimalFormat f = new DecimalFormat();
-            System.out.println("Done! " + t.stop().diffString());
+            System.out.println("Done! " + time / 50);
             //System.out.println("Source size : " + f.format(Files.size(testFromFile)) + " bytes");
             //System.out.println("Destination size : " + f.format(Files.size(testToFile)) + " bytes");
             //System.out.println("Compression rate : " + (100 - 100 * Files.size(testToFile) / Files.size(testFromFile)) + "%");
-            System.out.println("Source size : " + f.format(Files.size(dictionarySource)) + " bytes");
-            System.out.println("Destination size : " + f.format(Files.size(dictionaryDest)) + " bytes");
-            System.out.println("Compression rate : " + (100 - 100 * Files.size(dictionaryDest) / Files.size(dictionarySource)) + "%");
+            //          System.out.println("Source size : " + f.format(Files.size(dictionarySource)) + " bytes");
+            //          System.out.println("Destination size : " + f.format(Files.size(dictionaryDest)) + " bytes");
+            //          System.out.println("Compression rate : " + (100 - 100 * Files.size(dictionaryDest) / Files.size(dictionarySource)) + "%");
+            System.out.println("Source size : " + f.format(Files.size(miserablesSource)) + " bytes");
+            System.out.println("Destination size : " + f.format(Files.size(miserablesDest)) + " bytes");
+            System.out.println("Compression rate : " + (100 - 100 * Files.size(miserablesDest) / Files.size(miserablesSource)) + "%");
         } catch (final IOException e) {
             e.printStackTrace();
         }
