@@ -3,7 +3,7 @@ package grtap.huffman.util;
 import java.util.Arrays;
 
 // Represents some bits
-public class BitArray {
+public class BitArray implements Comparable<BitArray> {
 
     // Our bits
     private byte[] bits;
@@ -53,6 +53,21 @@ public class BitArray {
         return this; // Chain call
     }
 
+    // TODO There is certainly a faster and more complicated way
+    public BitArray add(final BitArray o) {
+        for (int i = 0; i < o.lastByte; i++) {
+            for (int j = Byte.SIZE - 1; j >= 0; j--) {
+                final byte b = o.bits[i];
+                add((b >> j & 1) == 0 ? 0 : 1);
+            }
+        }
+        for (int j = Byte.SIZE - 1; j >= o.lastBit; j--) {
+            final byte b = o.bits[o.lastByte];
+            add((b >> j & 1) == 0 ? 0 : 1);
+        }
+        return this;
+    }
+
     // Clone the current BitArray and append a bit
     public BitArray cloneThenAdd(final int bit) {
         return clone().add(bit);
@@ -69,6 +84,26 @@ public class BitArray {
     // Set the bit at position 'pos' in the byte 'b'
     public byte set(final byte b, final int pos) {
         return (byte) (b | 1 << pos);
+    }
+
+    // Get a byte[] of all the "complete" bytes of the array
+    // Remove those first bytes from the array
+    public byte[] pollByteArray() {
+        if (lastBit == 0) {
+            final byte[] res = Arrays.copyOf(bits, lastByte + 1);
+            bits = new byte[bits.length];
+            lastByte = 0;
+            lastBit = Byte.SIZE;
+            return res;
+        } else {
+            final byte[] res = new byte[lastByte];
+            final byte[] newBits = new byte[bits.length];
+            System.arraycopy(bits, 0, res, 0, lastByte);
+            newBits[0] = bits[lastByte];
+            bits = newBits;
+            lastByte = 0;
+            return res;
+        }
     }
 
     @Override
@@ -124,5 +159,21 @@ public class BitArray {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(final BitArray o) {
+        int cmp = Integer.compare(length(), o.length());
+        if (cmp != 0) {
+            return cmp;
+        } else {
+            for (int i = 0; i <= lastByte; i++) {
+                cmp = toString().compareTo(o.toString());
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
+            return 0;
+        }
     }
 }

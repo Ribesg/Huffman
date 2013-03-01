@@ -1,8 +1,9 @@
 package grtap.huffman.binarytree;
 
 import grtap.huffman.util.BitArray;
+import grtap.huffman.util.CharacterCode;
 
-import java.util.Map;
+import java.util.TreeSet;
 
 // This class represents the case where we have no children
 public class Leaf extends Node {
@@ -14,7 +15,7 @@ public class Leaf extends Node {
     }
 
     @Override
-    public Map<Character, BitArray> getCharacterCodes(final Map<Character, BitArray> map, final BitArray codePrefix) {
+    public TreeSet<CharacterCode> getCharacterCodes(final TreeSet<CharacterCode> codes, final BitArray codePrefix) {
         throw new UnsupportedOperationException();
     }
 

@@ -1,8 +1,9 @@
 package grtap.huffman.binarytree;
 
 import grtap.huffman.util.BitArray;
+import grtap.huffman.util.CharacterCode;
 
-import java.util.Map;
+import java.util.TreeSet;
 
 // This class represents a Node which have 2 children
 public class BinaryNode extends Node {
@@ -15,20 +16,20 @@ public class BinaryNode extends Node {
     }
 
     @Override
-    public Map<Character, BitArray> getCharacterCodes(Map<Character, BitArray> map, final BitArray codePrefix) {
+    public TreeSet<CharacterCode> getCharacterCodes(TreeSet<CharacterCode> codes, final BitArray codePrefix) {
         // First, clone the prefix before appending the 0 for the left operand
         if (left.isLeaf()) {
-            map.put(left.getVal(), codePrefix.cloneThenAdd(0));
+            codes.add(new CharacterCode(left.getVal(), codePrefix.cloneThenAdd(0)));
         } else {
-            map = left.getCharacterCodes(map, codePrefix.cloneThenAdd(0));
+            codes = left.getCharacterCodes(codes, codePrefix.cloneThenAdd(0));
         }
         // Then, use the same BitArray object with and additional 1 for the right operand
         if (right.isLeaf()) {
-            map.put(right.getVal(), codePrefix.add(1));
+            codes.add(new CharacterCode(right.getVal(), codePrefix.add(1)));
         } else {
-            map = right.getCharacterCodes(map, codePrefix.add(1));
+            codes = right.getCharacterCodes(codes, codePrefix.add(1));
         }
-        return map;
+        return codes;
     }
 
     @Override

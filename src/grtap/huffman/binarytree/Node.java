@@ -1,8 +1,9 @@
 package grtap.huffman.binarytree;
 
 import grtap.huffman.util.BitArray;
+import grtap.huffman.util.CharacterCode;
 
-import java.util.Map;
+import java.util.TreeSet;
 
 // This abstract class represents any Node in the Tree
 public abstract class Node {
@@ -35,5 +36,5 @@ public abstract class Node {
 
     public abstract char getVal();
 
-    public abstract Map<Character, BitArray> getCharacterCodes(final Map<Character, BitArray> map, final BitArray codePrefix);
+    public abstract TreeSet<CharacterCode> getCharacterCodes(final TreeSet<CharacterCode> codes, final BitArray codePrefix);
 }

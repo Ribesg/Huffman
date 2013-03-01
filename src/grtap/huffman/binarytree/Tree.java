@@ -1,9 +1,9 @@
 package grtap.huffman.binarytree;
 
 import grtap.huffman.util.BitArray;
+import grtap.huffman.util.CharacterCode;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.TreeSet;
 
 public class Tree implements Comparable<Tree> {
     private final Node root;
@@ -21,23 +21,27 @@ public class Tree implements Comparable<Tree> {
         priority = left.priority + right.priority;
     }
 
-    public Map<Character, BitArray> getCharacterCodes() {
-        final Map<Character, BitArray> map = new HashMap<Character, BitArray>();
+    public TreeSet<CharacterCode> getCharacterCodes() {
+        final TreeSet<CharacterCode> codes = new TreeSet<CharacterCode>();
         if (root.isLeaf()) {
             final BitArray bits = new BitArray();
-            map.put(root.getVal(), bits);
-            return map;
+            codes.add(new CharacterCode(root.getVal(), bits));
+            return codes;
         } else {
-            return root.getCharacterCodes(map, new BitArray());
+            return root.getCharacterCodes(codes, new BitArray());
         }
     }
 
     @Override
     public int compareTo(final Tree o) {
         final int res = Integer.compare(priority, o.priority);
-        if (res == 0 && root.isLeaf() && o.root.isLeaf()) {
+        if (res == 0) {
             // Be sure we keep the same order for char with same priorities
-            return Character.compare(root.getVal(), o.root.getVal());
+            if (root.isLeaf() && o.root.isLeaf()) {
+                return Character.compare(root.getVal(), o.root.getVal());
+            } else {
+                return -1; // TODO Have consistent comparison
+            }
         }
         return res > 0 ? 1 : -1; // Do not return 0
     }
