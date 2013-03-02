@@ -30,7 +30,7 @@ public class Main {
         System.out.println("Encoding...");
         try {
             long time = 0;
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 20; i++) {
                 final Timer t = new Timer().start();
                 //Encoder.encode(testFromFile, testToFile, true);
                 //          Encoder.encode(dictionarySource, dictionaryDest, true);
@@ -39,7 +39,7 @@ public class Main {
                 time += t.nanoDiff();
             }
             final DecimalFormat f = new DecimalFormat();
-            System.out.println("Done! " + time / 50);
+            System.out.println("Done! " + time / 20);
             //System.out.println("Source size : " + f.format(Files.size(testFromFile)) + " bytes");
             //System.out.println("Destination size : " + f.format(Files.size(testToFile)) + " bytes");
             //System.out.println("Compression rate : " + (100 - 100 * Files.size(testToFile) / Files.size(testFromFile)) + "%");

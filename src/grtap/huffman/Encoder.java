@@ -4,15 +4,16 @@ import grtap.huffman.binarytree.Tree;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.TreeSet;
 
 public abstract class Encoder {
@@ -22,18 +23,30 @@ public abstract class Encoder {
     public final static Charset CHARSET          = StandardCharsets.ISO_8859_1;
 
     public static void encode(final Path from, final Path to, final boolean overwrite) throws IOException {
+        //        final Timer checkTimer = new Timer();
+        //        final Timer treeTimer = new Timer();
+        //        final Timer codesTimer = new Timer();
+        //        final Timer treeWritingTimer = new Timer();
+        //        final Timer codesArrayTimer = new Timer();
+        //        final Timer encodingTimer = new Timer();
         if (Files.notExists(from)) {
             return; //TODO Error
         } else if (Files.exists(to) && !overwrite) {
             return; // TODO Error
         }
 
+        //        treeTimer.start();
         final Tree tree = buildTree(from);
+        //        treeTimer.stop();
 
         // Get the character codes
+        //        codesTimer.start();
         final TreeSet<CharacterCode> codes = tree.getCharacterCodes();
+        //        codesTimer.stop();
+
+        // Write the Tree to the file
+        //        treeWritingTimer.start();
         try (final BufferedWriter writer = Files.newBufferedWriter(to, CHARSET)) {
-            // Write the Tree to the file
             int currentLength = 1;
             for (final CharacterCode cur : codes) {
                 while (cur.getCode().length() > currentLength) {
@@ -44,32 +57,47 @@ public abstract class Encoder {
             }
             writer.write(TREE_END);
         }
+        //        treeWritingTimer.stop();
 
         // Encode the source file
+        //        codesArrayTimer.start();
         final BitArray[] codesArray = new BitArray[256];
         for (final CharacterCode c : codes) {
             codesArray[c.getChar()] = c.getCode();
         }
+        //        codesArrayTimer.stop();
+
+        //        encodingTimer.start();
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET);
-                final BufferedOutputStream writer = new BufferedOutputStream(Files.newOutputStream(to, StandardOpenOption.APPEND))) {
+                final FileChannel writer = new FileOutputStream(to.getFileName().toString(), false).getChannel()) {
             final char[] readBuffer = new char[8192];
             // Char size = 1 byte
             // CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?
             // So a buffer with a size equals to the char buffer is enough
             final BitArray writeBuffer = new BitArray(8192);
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
             int length;
             do {
                 length = reader.read(readBuffer);
                 for (int i = 0; i < length; i++) {
                     writeBuffer.add(codesArray[readBuffer[i]]);
                 }
-                final byte[] toBeWritten = writeBuffer.pollByteArray();
-                writer.write(toBeWritten);
+                byteBuffer.put(writeBuffer.pollByteArray());
+                writer.write(byteBuffer);
+                byteBuffer.rewind();
             } while (length == readBuffer.length);
             // TODO Output the last bits of writeBuffer (< 8 bits)
             // TODO Think of how we will decode this : do we need to know what's the last written bit ?
-            writer.flush();
         }
+        //        encodingTimer.stop();
+
+        //        System.out.println("Files check time : " + checkTimer.diffString());
+        //        System.out.println("Tree building time : " + treeTimer.diffString());
+        //        System.out.println("Codes get time : " + codesTimer.diffString());
+        //        System.out.println("Tree writing time : " + treeWritingTimer.diffString());
+        //        System.out.println("Codes to array time : " + codesArrayTimer.diffString());
+        //        System.out.println("Encoding time : " + encodingTimer.diffString());
+        //        System.out.println();
     }
 
     private static Tree buildTree(final Path textFile) {
