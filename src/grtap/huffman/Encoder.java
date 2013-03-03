@@ -8,8 +8,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -69,22 +67,19 @@ public abstract class Encoder {
 
         //        encodingTimer.start();
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET);
-                final FileChannel writer = new FileOutputStream(to.getFileName().toString(), false).getChannel()) {
+                final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), false)) {
             final char[] readBuffer = new char[8192];
             // Char size = 1 byte
             // CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?
             // So a buffer with a size equals to the char buffer is enough
             final BitArray writeBuffer = new BitArray(8192);
-            final ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
             int length;
             do {
                 length = reader.read(readBuffer);
                 for (int i = 0; i < length; i++) {
                     writeBuffer.add(codesArray[readBuffer[i]]);
                 }
-                byteBuffer.put(writeBuffer.pollByteArray());
-                writer.write(byteBuffer);
-                byteBuffer.rewind();
+                writer.write(writeBuffer.pollByteArray());
             } while (length == readBuffer.length);
             // TODO Output the last bits of writeBuffer (< 8 bits)
             // TODO Think of how we will decode this : do we need to know what's the last written bit ?
