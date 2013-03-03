@@ -40,6 +40,7 @@ public abstract class Encoder {
         // Get the character codes
         //        codesTimer.start();
         final TreeSet<CharacterCode> codes = tree.getCharacterCodes();
+        System.out.println(codes.toString());
         //        codesTimer.stop();
 
         // Write the Tree to the file
@@ -67,7 +68,7 @@ public abstract class Encoder {
 
         //        encodingTimer.start();
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET);
-                final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), false)) {
+                final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), true)) {
             final char[] readBuffer = new char[8192];
             // Char size = 1 byte
             // CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?

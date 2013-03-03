@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
+    public final static int LOOPS = 1;
 
     public static void main(final String[] args) {
         final Path testFromFile = Paths.get("test.txt");
@@ -23,6 +24,7 @@ public class Main {
 
         final Path miserablesSource = Paths.get("LesMiserables.txt");
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
+        final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
         //System.out.println("Generating random file...");
         //random(testFromFile, 15_000, true);
@@ -30,7 +32,7 @@ public class Main {
         System.out.println("Encoding...");
         try {
             long time = 0;
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < LOOPS; i++) {
                 final Timer t = new Timer().start();
                 //                Encoder.encode(testFromFile, testToFile, true);
                 //                          Encoder.encode(dictionarySource, dictionaryDest, true);
@@ -39,7 +41,7 @@ public class Main {
                 time += t.nanoDiff();
             }
             final DecimalFormat f = new DecimalFormat();
-            System.out.println("Done! " + time / 20);
+            System.out.println("Done! " + time / LOOPS);
             //            System.out.println("Source size : " + f.format(Files.size(testFromFile)) + " bytes");
             //            System.out.println("Destination size : " + f.format(Files.size(testToFile)) + " bytes");
             //            System.out.println("Compression rate : " + (100 - 100 * Files.size(testToFile) / Files.size(testFromFile)) + "%");
@@ -50,6 +52,23 @@ public class Main {
             System.out.println("Destination size : " + f.format(Files.size(miserablesDest)) + " bytes");
             System.out.println("Compression rate : " + (100 - 100 * Files.size(miserablesDest) / Files.size(miserablesSource)) + "%");
         } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("Decoding...");
+        try {
+        	long time = 0;
+            for (int i = 0; i < LOOPS; i++) {
+                final Timer t = new Timer().start();
+                //                Encoder.encode(testFromFile, testToFile, true);
+                //                          Encoder.encode(dictionarySource, dictionaryDest, true);
+                Decoder.decode(miserablesDest, miserablesDecoded, true);
+                t.stop();
+                time += t.nanoDiff();
+            }
+            final DecimalFormat f = new DecimalFormat();
+            System.out.println("Done! " + time / LOOPS);
+        }catch (final IOException e) {
             e.printStackTrace();
         }
     }
