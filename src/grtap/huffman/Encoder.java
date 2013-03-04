@@ -1,6 +1,7 @@
 package grtap.huffman;
 
 import grtap.huffman.binarytree.Tree;
+import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
 
@@ -14,61 +15,54 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.TreeSet;
 
-public abstract class Encoder {
+public class Encoder {
 
-    public final static char    INCR_CODE_LENGTH = 0xB9;
-    public final static char    TREE_END         = 0xD7;
-    public final static Charset CHARSET          = StandardCharsets.ISO_8859_1;
+    public final static Charset    CHARSET = StandardCharsets.ISO_8859_1;
 
-    public static void encode(final Path from, final Path to, final boolean overwrite) throws IOException {
-        //        final Timer checkTimer = new Timer();
-        //        final Timer treeTimer = new Timer();
-        //        final Timer codesTimer = new Timer();
-        //        final Timer treeWritingTimer = new Timer();
-        //        final Timer codesArrayTimer = new Timer();
-        //        final Timer encodingTimer = new Timer();
+    private Path                   sourceFile;
+    private Path                   destinationFile;
+
+    private int[]                  characterCount;
+    private Tree                   huffmanTree;
+    private TreeSet<CharacterCode> sortedCodes;
+    private BitArray[]             codesArray;
+
+    public Encoder() {
+        characterCount = new int[256];
+        huffmanTree = null;
+        sortedCodes = new TreeSet<CharacterCode>();
+        codesArray = new BitArray[256];
+    }
+
+    // Dest : Tree size + separator + tree + encoded file
+    public void encode(final Path from, final Path to, final boolean overwrite) throws IOException {
         if (Files.notExists(from)) {
-            return; //TODO Error
+            return; // TODO Error
         } else if (Files.exists(to) && !overwrite) {
             return; // TODO Error
         }
 
-        //        treeTimer.start();
-        final Tree tree = buildTree(from);
-        //        treeTimer.stop();
+        sourceFile = from;
+        destinationFile = to;
 
-        // Get the character codes
-        //        codesTimer.start();
-        final TreeSet<CharacterCode> codes = tree.getCharacterCodes();
-        System.out.println(codes.toString());
-        //        codesTimer.stop();
+        // Count the number of occurences of each character in the file
+        countCharactersInFile();
+
+        // Build the tree from this count
+        buildTree();
+
+        // Get the character codes from the tree
+        sortedCodes = huffmanTree.getCharacterCodes();
 
         // Write the Tree to the file
-        //        treeWritingTimer.start();
-        try (final BufferedWriter writer = Files.newBufferedWriter(to, CHARSET)) {
-            int currentLength = 1;
-            for (final CharacterCode cur : codes) {
-                while (cur.getCode().length() > currentLength) {
-                    writer.write(INCR_CODE_LENGTH);
-                    currentLength++;
-                }
-                writer.write(cur.getChar());
-            }
-            writer.write(TREE_END);
-        }
-        //        treeWritingTimer.stop();
+        writeTree();
 
-        // Encode the source file
-        //        codesArrayTimer.start();
-        final BitArray[] codesArray = new BitArray[256];
-        for (final CharacterCode c : codes) {
+        // Encode the source file // TODO method
+        for (final CharacterCode c : sortedCodes) {
             codesArray[c.getChar()] = c.getCode();
         }
-        //        codesArrayTimer.stop();
 
-        //        encodingTimer.start();
-        try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET);
-                final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), true)) {
+        try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET); final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), true)) {
             final char[] readBuffer = new char[8192];
             // Char size = 1 byte
             // CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?
@@ -85,26 +79,27 @@ public abstract class Encoder {
             // TODO Output the last bits of writeBuffer (< 8 bits)
             // TODO Think of how we will decode this : do we need to know what's the last written bit ?
         }
-        //        encodingTimer.stop();
-
-        //        System.out.println("Files check time : " + checkTimer.diffString());
-        //        System.out.println("Tree building time : " + treeTimer.diffString());
-        //        System.out.println("Codes get time : " + codesTimer.diffString());
-        //        System.out.println("Tree writing time : " + treeWritingTimer.diffString());
-        //        System.out.println("Codes to array time : " + codesArrayTimer.diffString());
-        //        System.out.println("Encoding time : " + encodingTimer.diffString());
-        //        System.out.println();
     }
 
-    private static Tree buildTree(final Path textFile) {
-        // Count characters occurences
-        final int[] counts = countCharactersInFile(textFile);
+    private void writeTree() {
+        try (final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
+            int currentLength = 1;
+            for (final CharacterCode cur : sortedCodes) {
+                while (cur.getCode().length() > currentLength) {
+                    writer.write(separateur); // TODO Get first char with 0 occurences
+                    currentLength++;
+                }
+                writer.write(cur.getChar());
+            }
+        }
+    }
 
+    private void buildTree() {
         // Build the per-characters trees
         final TreeSet<Tree> treeSet = new TreeSet<Tree>();
         for (char i = 0; i < 256; i++) {
-            if (counts[i] > 0) {
-                treeSet.add(new Tree(i, counts[i]));
+            if (characterCount[i] > 0) {
+                treeSet.add(new Tree(i, characterCount[i]));
             }
         }
 
@@ -118,13 +113,12 @@ public abstract class Encoder {
         }
 
         // There is only our final tree left
-        return treeSet.pollFirst();
+        huffmanTree = treeSet.pollFirst();
     }
 
-    // Returns a int[256] with the number of occurences of each char
-    private static int[] countCharactersInFile(final Path pathToFile) {
-        final int[] characterCount = new int[256]; // Size of ANSI table
-        try (BufferedReader reader = Files.newBufferedReader(pathToFile, CHARSET)) {
+    // Set a int[256] with the number of occurences of each char
+    private void countCharactersInFile() {
+        try (BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET)) {
             final char[] buffer = new char[8192];
             int nb = -1;
             while (reader.ready()) {
@@ -137,6 +131,5 @@ public abstract class Encoder {
             e.printStackTrace();
             System.exit(-1);
         }
-        return characterCount;
     }
 }

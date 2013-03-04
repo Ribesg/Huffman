@@ -29,7 +29,6 @@ public abstract class Decoder {
         //First, we read the tree
         final BufferedReader reader = Files.newBufferedReader(from, CHARSET);
         int[] array = new int[256]; //store chars and their code's length
-        Arrays.fill(array, 0); //a length of 0 => char not present
         int curChar = reader.read();
         int curLength = 1;
         
