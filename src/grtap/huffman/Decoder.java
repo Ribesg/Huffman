@@ -46,34 +46,9 @@ public abstract class Decoder {
         }
         
         //now we build the tree from the array
-
-        Tree myTree = buildTree(array); //TODO: find how to rebuild tree correctly
-        
-        TreeSet<CharacterCode> codes = myTree.getCharacterCodes();
-        
-        System.out.println(codes.toString());
         
         //then we read the file and translate
 	}
 
-	private static Tree buildTree(int[] array){
-
-        final TreeSet<Tree> treeSet = new TreeSet<Tree>();
-        for (char i = 0; i < 256; i++) {
-            if (array[i] > 0) {
-                treeSet.add(new Tree(i, array[i]));
-            }
-        }
-        
-        Tree left;
-        Tree right;
-        while (treeSet.size() > 1) {
-            left = treeSet.pollFirst();
-            right = treeSet.pollFirst();
-            treeSet.add(new Tree(left, right));
-        }
-
-        // There is only our final tree left
-        return treeSet.pollFirst();
-	}
+	
 }
