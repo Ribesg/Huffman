@@ -128,12 +128,12 @@ public class BitArray implements Comparable<BitArray> {
     }
 
     // Clears the bit at position 'pos' in the byte 'b'
-    public byte clear(final byte b, final int pos) {
+    private byte clear(final byte b, final int pos) {
         return (byte) (b & ~(1 << pos));
     }
 
     // Get the value of a bit
-    public int get(final byte b, final int pos) {
+    private int get(final byte b, final int pos) {
         return (b & 1 << pos) == 0 ? 0 : 1;
     }
 
@@ -169,6 +169,7 @@ public class BitArray implements Comparable<BitArray> {
         return Byte.SIZE - lastBit;
     }
 
+    // TODO Euh ca lag quand meme un peu
     public boolean isPrefixedBy(BitArray o) {
         return this.toString().startsWith(o.toString());
     }
