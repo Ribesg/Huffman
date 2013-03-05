@@ -164,6 +164,14 @@ public class BitArray implements Comparable<BitArray> {
         return Byte.SIZE - lastBit;
     }
 
+    public boolean isPrefixedBy(BitArray o) {
+        return this.toString().startsWith(o.toString());
+    }
+
+    public boolean isPrefixOf(BitArray o) {
+        return o.isPrefixedBy(this);
+    }
+
     @Override
     public String toString() {
         byte b;
