@@ -49,7 +49,8 @@ public class Main {
                 if (e.codesArray[c] != null) {
                     System.out.println(c + " ; " + e.codesArray[c].length() + " ; " + e.codesArray[c]);
                 }
-            }System.out.println();
+            }
+            System.out.println();
             final DecimalFormat f = new DecimalFormat();
             System.out.println("Done! " + Timer.parseDiff(time / LOOPS));
             System.out.println("Source size : " + f.format(Files.size(testFromFile)) + " bytes");
