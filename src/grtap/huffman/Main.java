@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
-    public final static int LOOPS = 10;
+    public final static int LOOPS = 100;
 
     @SuppressWarnings("unused")
     public static void main(final String[] args) {

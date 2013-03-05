@@ -22,7 +22,6 @@ public class Encoder {
     protected Path                   destinationFile;
 
     protected int[]                  characterCount;
-    protected char                   separatorChar;
     protected Tree                   huffmanTree;
     protected TreeSet<CharacterCode> sortedCodes;
     protected BitArray[]             codesArray;
@@ -49,9 +48,6 @@ public class Encoder {
     public void encode() throws IOException {
         // Count the number of occurences of each character in the file
         countCharactersInFile();
-
-        // Find an unused character to be used as separator in the tree writing
-        findSeparator();
 
         // Build the tree from this count
         buildTree();
@@ -81,7 +77,15 @@ public class Encoder {
                 }
                 writer.write(writeBuffer.pollByteArray());
             } while (length == readBuffer.length);
-            // TODO WRITE LAST BYTE + LAST BYTE SIZE
+            if (writeBuffer.hasRemainingByte()) {
+                // Last byte does not contain 8 interesting bits
+                int lastByteLength = writeBuffer.getLastByteLength();
+                writer.write(writeBuffer.getLastByte());
+                writer.write(lastByteLength);
+            } else {
+                // Last byte is full
+                writer.write(0x00);
+            }
         }
     }
 
@@ -95,16 +99,11 @@ public class Encoder {
         try (final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
             char[] treeString = new char[512];
             int treeStringLength = 0;
-            int currentCodeLength = 1;
             for (final CharacterCode cur : sortedCodes) {
-                while (cur.getCode().length() > currentCodeLength) {
-                    treeString[treeStringLength++] = separatorChar; // TODO Get first char with 0 occurences
-                    currentCodeLength++;
-                }
                 treeString[treeStringLength++] = cur.getChar();
+                treeString[treeStringLength++] = (char) cur.getCode().length();
             }
             writer.write(treeStringLength);
-            writer.write(separatorChar);
             writer.write(treeString, 0, treeStringLength);
         }
     }
@@ -129,17 +128,6 @@ public class Encoder {
 
         // There is only our final tree left
         huffmanTree = treeSet.pollFirst();
-    }
-
-    private void findSeparator() {
-        for (char c = 255; c > 0; c--) {
-            if (characterCount[c] == 0) {
-                separatorChar = c;
-                return;
-            }
-        }
-        // That should not be possible as some characters are never used
-        throw new IllegalArgumentException("Unable to find a separator character");
     }
 
     // Set a int[256] with the number of occurences of each char
