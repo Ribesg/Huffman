@@ -1,5 +1,7 @@
 package grtap.huffman.util;
 
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 import java.util.Arrays;
 
 // Represents some bits
@@ -55,6 +57,8 @@ public class BitArray implements Comparable<BitArray> {
 
     // TODO There is certainly a faster and more complicated way
     public BitArray add(final BitArray o) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(o.bits);
+        LongBuffer longBuffer = byteBuffer.asLongBuffer();
         for (int i = 0; i < o.lastByte; i++) {
             for (int j = Byte.SIZE - 1; j >= 0; j--) {
                 final byte b = o.bits[i];
