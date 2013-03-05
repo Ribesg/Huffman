@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -44,28 +42,32 @@ public class Decoder {
 
         // then we read the file and translate
 
-        try (final FileInputStream inputStream = new FileInputStream(from.toFile()); final FileChannel channel = inputStream.getChannel()) {
+        try (final FileInputStream reader = new FileInputStream(from.toFile()); final BufferedWriter writer = Files.newBufferedWriter(to, CHARSET)) {
 
-            MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, treeEndPos, channel.size());
-            BufferedWriter writer = Files.newBufferedWriter(to, CHARSET);
-            char[] writeBuffer = new char[8192];
+            char[] writeBuffer = new char[8192]; // TODO:
+            byte[] readBuffer = new byte[1024];
             int writeBufferPos = 0;
             Character curChar;
-            BitArray curCode = new BitArray(2);
+            BitArray curCode = new BitArray();
 
-            for (int i = 0; i < buffer.capacity(); i++) { // read each byte in file
-                for (int j = 0; j < 7; j++) {
-                    curCode.add(0x80 & buffer.get(i) << j); // add each bit to current code
-                    if ((curChar = codes.get(curCode)) != null) { // if current code is a valid one
-                        writeBuffer[writeBufferPos++] = curChar; // add it to the writeBuffer
-                        if (writeBufferPos == 8192) {
-                            writer.write(writeBuffer); // write in destination file when writeBuffer is full
-                            writeBufferPos = 0; // reset
+            int lengthByte;
+
+            do {
+                lengthByte = reader.read(readBuffer);
+                for (byte b : readBuffer) { // read each byte in file
+                    for (int i = 0; i < Byte.SIZE; i++) {
+                        curCode.add((b & 1 << i) == 0 ? 0 : 1); // add each bit to current code
+                        if ((curChar = codes.get(curCode)) != null) { // if current code is a valid one
+                            writeBuffer[writeBufferPos++] = curChar; // add it to the writeBuffer
+                            if (writeBufferPos == 8192) {
+                                writer.write(writeBuffer); // write in destination file when writeBuffer is full
+                                writeBufferPos = 0; // reset
+                            }
                         }
                     }
                 }
-            }
-            writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
+                writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
+            } while (lengthByte == readBuffer.length);
         }
     }
 
@@ -74,35 +76,40 @@ public class Decoder {
 
         // First, we read the tree
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET)) {
-            treeEndPos = reader.read(); // first int in file is the position of first char after the tree
+            treeEndPos = reader.read(); // first int in file is the position of
+                                        // first char after the tree
 
             char[] treeString = new char[treeEndPos];
 
             reader.read(treeString);
 
-            LinkedHashMap<Character, Integer> charCodesLength = new LinkedHashMap<Character, Integer>();// store chars and their code's length
+            LinkedHashMap<Character, Integer> charCodesLength = new LinkedHashMap<Character, Integer>();// store
+                                                                                                        // chars
+                                                                                                        // and
+                                                                                                        // their
+                                                                                                        // code's
+                                                                                                        // length
 
             for (int i = 0; i < treeString.length - 1; i += 2) {
                 charCodesLength.put(treeString[i], (int) treeString[i + 1]);
             }
 
             BitArray curCode = new BitArray(2);
+            boolean valid = false;
             for (Entry<Character, Integer> e : charCodesLength.entrySet()) {
                 for (int i = 0; i < e.getValue(); i++) {
                     curCode.add(0);
+                }
+                do {
+                    valid = true;
                     for (BitArray b : res.keySet()) {
-                        if (curCode.isPrefixedBy(b)) {
-                            curCode.remove();
-                            curCode.add(1);
+                        if (b.isPrefixedBy(curCode) || curCode.isPrefixedBy(b)) {
+                            curCode.increment();
+                            valid = false;
                             break;
                         }
                     }
-                }
-                for (BitArray b : res.keySet()) {
-                    while (curCode.isPrefixedBy(b)) {
-                        curCode.increment();
-                    }
-                }
+                } while (!valid); // TODO : AU BUCHER
                 res.put(curCode, e.getKey());
                 curCode = new BitArray(2);
             }
