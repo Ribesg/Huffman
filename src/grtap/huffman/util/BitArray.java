@@ -21,7 +21,7 @@ public class BitArray implements Comparable<BitArray> {
 
     // Creates a new BitArray with an initial number of BYTES
     public BitArray(final int initialCapacity) {
-        bits = new byte[initialCapacity]; // Full of 0s
+        bits = new byte[initialCapacity <= 1 ? 1 : initialCapacity]; // Full of 0s
         lastByte = 0;
         lastBit = Byte.SIZE;
     }
@@ -152,6 +152,18 @@ public class BitArray implements Comparable<BitArray> {
         }
     }
 
+    public boolean hasRemainingByte() {
+        return !(lastByte > 0 || lastBit != Byte.SIZE);
+    }
+
+    public byte getLastByte() {
+        return bits[lastByte];
+    }
+
+    public int getLastByteLength() {
+        return Byte.SIZE - lastBit;
+    }
+
     @Override
     public String toString() {
         final StringBuilder s = new StringBuilder(bits.length * Byte.SIZE);
@@ -209,17 +221,16 @@ public class BitArray implements Comparable<BitArray> {
 
     @Override
     public int compareTo(final BitArray o) {
-        int cmp = Integer.compare(length(), o.length());
-        if (cmp != 0) {
-            return cmp;
-        } else {
-            for (int i = 0; i <= lastByte; i++) {
-                cmp = toString().compareTo(o.toString());
-                if (cmp != 0) {
-                    return cmp;
-                }
+        int res;
+        int i = 0;
+        while (true) {
+            res = Byte.compare(i < bits.length ? bits[i] : 0x00, i < o.bits.length ? o.bits[i] : 0x00);
+            i++;
+            if (res != 0) {
+                return res;
+            } else if (i >= bits.length && i >= o.bits.length) {
+                return 0;
             }
-            return 0;
         }
     }
 }

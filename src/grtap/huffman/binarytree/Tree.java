@@ -32,6 +32,7 @@ public class Tree implements Comparable<Tree> {
         }
     }
 
+    @Override
     public int compareTo(Tree o) {
         int res = Integer.compare(priority, o.priority);
         if (res == 0) {
@@ -44,6 +45,15 @@ public class Tree implements Comparable<Tree> {
             }
         }
         return res;
+    }
+
+    @Override
+    public String toString() {
+        if (root.isLeaf()) {
+            return Character.toString(root.getVal());
+        } else {
+            return "?";
+        }
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
-    public final static int LOOPS = 10;
+    public final static int LOOPS = 100;
 
     @SuppressWarnings("unused")
     public static void main(final String[] args) {
@@ -29,6 +29,7 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
+        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
         Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
 
         // System.out.println("Generating random file...");
