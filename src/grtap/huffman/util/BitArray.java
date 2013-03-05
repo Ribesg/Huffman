@@ -75,7 +75,7 @@ public class BitArray implements Comparable<BitArray> {
     //removes last bit from the BitArray
     public void remove()
     {
-    	bits[lastBit] = clear(bits[lastByte], lastBit);
+    	bits[lastByte] = clear(bits[lastByte], lastBit);
     	if(lastBit++ == Byte.SIZE){
     		lastBit = 0;
     		lastByte--;
