@@ -29,8 +29,8 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
-        Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
+         Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
+        //Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
         // Path from = dictionarySource, to = dictionaryDest, decoded = dictionaryDecoded;
 
         // System.out.println("Generating random file...");

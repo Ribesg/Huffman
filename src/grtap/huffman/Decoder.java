@@ -55,11 +55,12 @@ public class Decoder {
             Character curChar;
             BitArray curCode = new BitArray();
             
-            int lengthByte;
             
+            reader.skip(treeEndPos);
             
-            do{
-            	lengthByte = reader.read(readBuffer);
+            int lengthByte;            
+        	lengthByte = reader.read(readBuffer);            
+            while(lengthByte == readBuffer.length){
             	for(byte b : readBuffer){								// read each byte in file
             		for(int i = 0; i < Byte.SIZE; i++){
             			curCode.add((b&1<<i)==0?0:1);					// add each bit to current code
@@ -72,8 +73,9 @@ public class Decoder {
             			}
             		}
             	}
-        		writer.write(writeBuffer,0,writeBufferPos);			// write remaining chars
-            }while(lengthByte == readBuffer.length);
+            	lengthByte = reader.read(readBuffer);
+            }
+    		writer.write(writeBuffer,0,writeBufferPos);			// write remaining chars
         }
     }
 
