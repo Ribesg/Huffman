@@ -132,6 +132,11 @@ public class BitArray implements Comparable<BitArray> {
         return (byte) (b & ~(1 << pos));
     }
 
+    // Get the value of a bit
+    public int get(final byte b, final int pos) {
+        return (b & 1 << pos) == 0 ? 0 : 1;
+    }
+
     // Get a byte[] of all the "complete" bytes of the array
     // Remove those first bytes from the array
     public byte[] pollByteArray() {
@@ -168,8 +173,22 @@ public class BitArray implements Comparable<BitArray> {
         return this.toString().startsWith(o.toString());
     }
 
-    public boolean isPrefixOf(BitArray o) {
-        return o.isPrefixedBy(this);
+    public void increment() {
+        boolean done = false;
+        int iByte = lastByte, iBit = lastBit;
+        while (!done) {
+            if (get(bits[iByte], iBit) == 0) {
+                set(bits[iByte], iBit);
+                break;
+            } else {
+                clear(bits[iByte], iBit);
+                iBit++;
+                if (iBit == Byte.SIZE) {
+                    iByte--;
+                    iBit = 0;
+                }
+            }
+        }
     }
 
     @Override
