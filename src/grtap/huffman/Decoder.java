@@ -109,13 +109,13 @@ public class Decoder {
 				if(e.getValue() > 0){
 					for(int i = 0; i < e.getValue(); i++){
 						curCode.add(0);
-						if(res.containsKey(e.getKey())){
+						if(res.containsKey(curCode)){
 							curCode.remove();
 							curCode.add(1);
 						}
 					}
 					res.put(curCode, e.getKey());
-					curCode.clear();
+					curCode = new BitArray(2);
 				}
 			}
 		}
