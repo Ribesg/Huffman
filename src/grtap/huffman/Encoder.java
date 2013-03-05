@@ -1,7 +1,6 @@
 package grtap.huffman;
 
 import grtap.huffman.binarytree.Tree;
-import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
 
@@ -17,17 +16,29 @@ import java.util.TreeSet;
 
 public class Encoder {
 
-    public final static Charset    CHARSET = StandardCharsets.ISO_8859_1;
+    public final static Charset      CHARSET = StandardCharsets.ISO_8859_1;
 
-    private Path                   sourceFile;
-    private Path                   destinationFile;
+    protected Path                   sourceFile;
+    protected Path                   destinationFile;
 
-    private int[]                  characterCount;
-    private Tree                   huffmanTree;
-    private TreeSet<CharacterCode> sortedCodes;
-    private BitArray[]             codesArray;
+    protected int[]                  characterCount;
+    protected char                   separatorChar;
+    protected Tree                   huffmanTree;
+    protected TreeSet<CharacterCode> sortedCodes;
+    protected BitArray[]             codesArray;
 
-    public Encoder() {
+    public Encoder(final Path from, final Path to) {
+        this(from, to, false);
+    }
+
+    public Encoder(final Path from, final Path to, boolean overwrite) {
+        if (Files.notExists(from)) {
+            throw new IllegalArgumentException("Source file not found");
+        } else if (Files.exists(to) && !overwrite) {
+            throw new IllegalArgumentException("Destination file already exists");
+        }
+        sourceFile = from;
+        destinationFile = to;
         characterCount = new int[256];
         huffmanTree = null;
         sortedCodes = new TreeSet<CharacterCode>();
@@ -35,18 +46,12 @@ public class Encoder {
     }
 
     // Dest : Tree size + separator + tree + encoded file
-    public void encode(final Path from, final Path to, final boolean overwrite) throws IOException {
-        if (Files.notExists(from)) {
-            return; // TODO Error
-        } else if (Files.exists(to) && !overwrite) {
-            return; // TODO Error
-        }
-
-        sourceFile = from;
-        destinationFile = to;
-
+    public void encode() throws IOException {
         // Count the number of occurences of each character in the file
         countCharactersInFile();
+
+        // Find an unused character to be used as separator in the tree writing
+        findSeparator();
 
         // Build the tree from this count
         buildTree();
@@ -57,12 +62,12 @@ public class Encoder {
         // Write the Tree to the file
         writeTree();
 
-        // Encode the source file // TODO method
-        for (final CharacterCode c : sortedCodes) {
-            codesArray[c.getChar()] = c.getCode();
-        }
+        // Create the codesArray for encoding
+        createCodeArray();
 
-        try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET); final FileOutputStream writer = new FileOutputStream(to.getFileName().toString(), true)) {
+        // Encode source file
+        try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET);
+                final FileOutputStream writer = new FileOutputStream(destinationFile.toFile(), true)) {
             final char[] readBuffer = new char[8192];
             // Char size = 1 byte
             // CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?
@@ -81,16 +86,26 @@ public class Encoder {
         }
     }
 
-    private void writeTree() {
+    private void createCodeArray() {
+        for (final CharacterCode c : sortedCodes) {
+            codesArray[c.getChar()] = c.getCode();
+        }
+    }
+
+    private void writeTree() throws IOException {
         try (final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
-            int currentLength = 1;
+            char[] treeString = new char[512];
+            int treeStringLength = 0;
+            int currentCodeLength = 1;
             for (final CharacterCode cur : sortedCodes) {
-                while (cur.getCode().length() > currentLength) {
-                    writer.write(separateur); // TODO Get first char with 0 occurences
-                    currentLength++;
+                while (cur.getCode().length() > currentCodeLength) {
+                    treeString[treeStringLength++] = separatorChar; // TODO Get first char with 0 occurences
+                    currentCodeLength++;
                 }
-                writer.write(cur.getChar());
+                treeString[treeStringLength++] = cur.getChar();
             }
+            writer.write(treeStringLength);
+            writer.write(treeString, 0, treeStringLength);
         }
     }
 
@@ -114,6 +129,17 @@ public class Encoder {
 
         // There is only our final tree left
         huffmanTree = treeSet.pollFirst();
+    }
+
+    private void findSeparator() {
+        for (char c = 255; c > 0; c--) {
+            if (characterCount[c] == 0) {
+                separatorChar = c;
+                return;
+            }
+        }
+        // That should not be possible as some characters are never used
+        throw new IllegalArgumentException("Unable to find a separator character");
     }
 
     // Set a int[256] with the number of occurences of each char

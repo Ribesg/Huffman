@@ -38,7 +38,7 @@ public class Timer {
         return parseDiff(hotNanoDiff());
     }
 
-    private String parseDiff(final long nano) {
+    public static String parseDiff(final long nano) {
         if (nano < 1_000L) {
             return nano + "ns";
         } else if (nano < 1_000_000L) {
