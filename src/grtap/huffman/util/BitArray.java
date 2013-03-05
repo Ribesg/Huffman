@@ -178,10 +178,10 @@ public class BitArray implements Comparable<BitArray> {
         int iByte = lastByte, iBit = lastBit;
         while (!done) {
             if (get(bits[iByte], iBit) == 0) {
-                set(bits[iByte], iBit);
+                bits[iByte] = set(bits[iByte], iBit);
                 break;
             } else {
-                clear(bits[iByte], iBit);
+                bits[iByte] = clear(bits[iByte], iBit);
                 iBit++;
                 if (iBit == Byte.SIZE) {
                     iByte--;
