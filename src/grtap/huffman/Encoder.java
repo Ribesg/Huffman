@@ -105,6 +105,7 @@ public class Encoder {
                 treeString[treeStringLength++] = cur.getChar();
             }
             writer.write(treeStringLength);
+            writer.write(separatorChar);
             writer.write(treeString, 0, treeStringLength);
         }
     }
