@@ -94,6 +94,15 @@ public class BitArray implements Comparable<BitArray> {
         return this;
     }
 
+    // removes last bit from the BitArray
+    public void remove() {
+        bits[lastByte] = clear(bits[lastByte], lastBit);
+        if (lastBit++ == Byte.SIZE) {
+            lastBit = 0;
+            lastByte--;
+        }
+    }
+
     // Clone the current BitArray and append a bit
     public BitArray cloneThenAdd(final int bit) {
         return clone().add(bit);
@@ -113,9 +122,14 @@ public class BitArray implements Comparable<BitArray> {
         }
     }
 
-    // Set the bit at position 'pos' in the byte 'b'
+    // Sets the bit at position 'pos' in the byte 'b'
     private byte set(final byte b, final int pos) {
         return (byte) (b | 1 << pos);
+    }
+
+    // Clears the bit at position 'pos' in the byte 'b'
+    public byte clear(final byte b, final int pos) {
+        return (byte) (b & ~(1 << pos));
     }
 
     // Get a byte[] of all the "complete" bytes of the array

@@ -19,15 +19,17 @@ public class Main {
     public static void main(final String[] args) {
         final Path testFromFile = Paths.get("test.txt");
         final Path testToFile = Paths.get("test.txt.compressed");
+        final Path testDecodedFile = Paths.get("test.txt.decompressed");
 
         final Path dictionarySource = Paths.get("dictionary2.txt");
         final Path dictionaryDest = Paths.get("dictionary2.txt.compressed");
+        final Path dictionaryDecoded = Paths.get("dictionary2.txt.decompressed");
 
         final Path miserablesSource = Paths.get("LesMiserables.txt");
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        Path from = miserablesSource, to = miserablesDest;
+        Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
 
         // System.out.println("Generating random file...");
         // random(testFromFile, 15_000, true);
@@ -56,6 +58,13 @@ public class Main {
             System.out.println("Source size : " + f.format(Files.size(from)) + " bytes");
             System.out.println("Destination size : " + f.format(Files.size(to)) + " bytes");
             System.out.println("Compression rate : " + (100 - 100 * Files.size(to) / Files.size(from)) + "%");
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Decoding...");
+        try {
+            new Decoder(to, decoded, true).decode();
         } catch (final IOException e) {
             e.printStackTrace();
         }
