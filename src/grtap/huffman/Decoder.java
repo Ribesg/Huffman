@@ -68,6 +68,7 @@ public class Decoder {
                 }
                 writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
             } while (lengthByte == readBuffer.length);
+
         }
     }
 
@@ -76,19 +77,15 @@ public class Decoder {
 
         // First, we read the tree
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET)) {
-            treeEndPos = reader.read(); // first int in file is the position of
-                                        // first char after the tree
+            // first int in file is the position of first char after the tree
+            treeEndPos = reader.read();
 
             char[] treeString = new char[treeEndPos];
 
             reader.read(treeString);
 
-            LinkedHashMap<Character, Integer> charCodesLength = new LinkedHashMap<Character, Integer>();// store
-                                                                                                        // chars
-                                                                                                        // and
-                                                                                                        // their
-                                                                                                        // code's
-                                                                                                        // length
+            // store chars and their code's length
+            LinkedHashMap<Character, Integer> charCodesLength = new LinkedHashMap<Character, Integer>();
 
             for (int i = 0; i < treeString.length - 1; i += 2) {
                 charCodesLength.put(treeString[i], (int) treeString[i + 1]);

@@ -29,8 +29,8 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
-        Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
+        Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
+        // Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
         // Path from = dictionarySource, to = dictionaryDest, decoded = dictionaryDecoded;
 
         // System.out.println("Generating random file...");
@@ -67,7 +67,10 @@ public class Main {
 
         System.out.println("Decoding...");
         try {
+            Timer t = new Timer().start();
             new Decoder(to, decoded, true).decode();
+            t.stop();
+            System.out.println("Done! " + t.diffString());
         } catch (final IOException e) {
             e.printStackTrace();
         }
