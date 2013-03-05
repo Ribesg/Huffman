@@ -55,7 +55,7 @@ public class Decoder {
 
 		try(final FileInputStream inputStream = new FileInputStream(from.toFile());final FileChannel channel = inputStream.getChannel()){
 
-			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, treeEndPos, channel.size());
+			MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, treeEndPos, 1); //TODO: find correct size
 			BufferedWriter writer = Files.newBufferedWriter(to, CHARSET);
 			char[] writeBuffer = new char[8192];
 			int writeBufferPos = 0;
@@ -91,7 +91,6 @@ public class Decoder {
 
 			reader.read(treeString);
 
-			int[] array = new int[256]; 
 			LinkedHashMap<Character, Integer> charCodesLength = new LinkedHashMap<Character,Integer>();// store chars and their code's length
 			int curLength = 1;
 
@@ -100,7 +99,6 @@ public class Decoder {
 					curLength++;
 				} else {
 					charCodesLength.put(c, curLength);
-					array[c] = curLength;
 				}
 			}
 			
