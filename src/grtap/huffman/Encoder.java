@@ -81,8 +81,7 @@ public class Encoder {
                 }
                 writer.write(writeBuffer.pollByteArray());
             } while (length == readBuffer.length);
-            // TODO Output the last bits of writeBuffer (< 8 bits)
-            // TODO Think of how we will decode this : do we need to know what's the last written bit ?
+            // TODO WRITE LAST BYTE + LAST BYTE SIZE
         }
     }
 

@@ -19,6 +19,14 @@ public class Leaf extends Node {
         throw new UnsupportedOperationException();
     }
 
+    public int height() {
+        return 0;
+    }
+
+    public char getLeftChar() {
+        return val;
+    }
+
     @Override
     public int hashCode() {
         return val;

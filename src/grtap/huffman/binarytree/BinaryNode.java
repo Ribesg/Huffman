@@ -32,6 +32,14 @@ public class BinaryNode extends Node {
         return codes;
     }
 
+    public int height() {
+        return Math.max(left.height(), right.height()) + 1;
+    }
+
+    public char getLeftChar() {
+        return left.getLeftChar();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -1,7 +1,5 @@
 package grtap.huffman.util;
 
-import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 import java.util.Arrays;
 
 // Represents some bits
@@ -24,6 +22,12 @@ public class BitArray implements Comparable<BitArray> {
     // Creates a new BitArray with an initial number of BYTES
     public BitArray(final int initialCapacity) {
         bits = new byte[initialCapacity]; // Full of 0s
+        lastByte = 0;
+        lastBit = Byte.SIZE;
+    }
+
+    public void clear() {
+        Arrays.fill(bits, (byte) 0);
         lastByte = 0;
         lastBit = Byte.SIZE;
     }
@@ -57,18 +61,36 @@ public class BitArray implements Comparable<BitArray> {
 
     // TODO There is certainly a faster and more complicated way
     public BitArray add(final BitArray o) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(o.bits);
-        LongBuffer longBuffer = byteBuffer.asLongBuffer();
-        for (int i = 0; i < o.lastByte; i++) {
-            for (int j = Byte.SIZE - 1; j >= 0; j--) {
-                final byte b = o.bits[i];
-                add((b >> j & 1) == 0 ? 0 : 1);
+        if (this.lastByte == 0 && lastBit == Byte.SIZE) {
+            System.arraycopy(o.bits, 0, bits, 0, o.lastByte + 1);
+            lastByte = o.lastByte;
+            lastBit = o.lastBit;
+        } else {
+            ensureCapacity(lastByte + o.lastByte);
+            byte mask = (byte) (0xFF << Byte.SIZE - lastBit);
+
+            for (int i = 0; i <= o.lastByte; i++) {
+                byte other = o.bits[i];
+                bits[lastByte + i] |= (other & mask) >> Byte.SIZE - lastBit;
+                bits[lastByte + i + 1] = (byte) (o.bits[i] << lastBit);
             }
+            lastByte = lastByte + o.lastByte + 1;
+            if (lastBit + o.lastBit >= Byte.SIZE) {
+                lastByte--;
+            }
+            lastBit = (lastBit + o.lastBit) % Byte.SIZE;
         }
-        for (int j = Byte.SIZE - 1; j >= o.lastBit; j--) {
-            final byte b = o.bits[o.lastByte];
-            add((b >> j & 1) == 0 ? 0 : 1);
-        }
+
+        // for (int i = 0; i < o.lastByte; i++) {
+        // for (int j = Byte.SIZE - 1; j >= 0; j--) {
+        // final byte b = o.bits[i];
+        // add((b >> j & 1) == 0 ? 0 : 1);
+        // }
+        // }
+        // for (int j = Byte.SIZE - 1; j >= o.lastBit; j--) {
+        // final byte b = o.bits[o.lastByte];
+        // add((b >> j & 1) == 0 ? 0 : 1);
+        // }
         return this;
     }
 
@@ -85,8 +107,14 @@ public class BitArray implements Comparable<BitArray> {
         bits = Arrays.copyOf(bits, 2 * bits.length);
     }
 
+    private void ensureCapacity(int nbBytes) {
+        while (bits.length < nbBytes) {
+            doubleCapacity();
+        }
+    }
+
     // Set the bit at position 'pos' in the byte 'b'
-    public byte set(final byte b, final int pos) {
+    private byte set(final byte b, final int pos) {
         return (byte) (b | 1 << pos);
     }
 

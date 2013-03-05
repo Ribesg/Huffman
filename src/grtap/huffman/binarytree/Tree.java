@@ -6,8 +6,8 @@ import grtap.huffman.util.CharacterCode;
 import java.util.TreeSet;
 
 public class Tree implements Comparable<Tree> {
-    private final Node root;
-    private final int  priority;
+    protected final Node root;
+    protected final int  priority;
 
     // Build a Tree with one value
     public Tree(final char val, final int prior) {
@@ -32,18 +32,18 @@ public class Tree implements Comparable<Tree> {
         }
     }
 
-    @Override
-    public int compareTo(final Tree o) {
-        final int res = Integer.compare(priority, o.priority);
+    public int compareTo(Tree o) {
+        int res = Integer.compare(priority, o.priority);
         if (res == 0) {
             // Be sure we keep the same order for char with same priorities
             if (root.isLeaf() && o.root.isLeaf()) {
                 return Character.compare(root.getVal(), o.root.getVal());
             } else {
-                return -1; // TODO Have consistent comparison
+                res = Integer.compare(root.height(), o.root.height());
+                return res == 0 ? 1 : res; // Never return 0
             }
         }
-        return res > 0 ? 1 : -1; // Do not return 0
+        return res;
     }
 
     @Override

@@ -26,6 +26,10 @@ public abstract class Node {
         return type == Type.LEAF;
     }
 
+    public abstract int height();
+
+    public abstract char getLeftChar();
+
     // Following methods are common to all Node
     // To have a clear code without tons of casts
     // /!\ Should never be called without a check to isLeaf() before

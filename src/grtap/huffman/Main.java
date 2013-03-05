@@ -1,6 +1,5 @@
 package grtap.huffman;
 
-import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.Timer;
 
 import java.io.BufferedWriter;
@@ -14,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
-    public final static int LOOPS = 1;
+    public final static int LOOPS = 10;
 
     @SuppressWarnings("unused")
     public static void main(final String[] args) {
@@ -28,7 +27,7 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        Path from = testFromFile, to = testToFile;
+        Path from = miserablesSource, to = miserablesDest;
 
         // System.out.println("Generating random file...");
         // random(testFromFile, 15_000, true);
@@ -44,18 +43,19 @@ public class Main {
                 t.stop();
                 time += t.nanoDiff();
             }
-            TreePrinter.printTree(e.huffmanTree);
+            // TreePrinter.printTree(e.huffmanTree);
             for (char c = 0; c < 256; c++) {
                 if (e.codesArray[c] != null) {
                     System.out.println(c + " ; " + e.codesArray[c].length() + " ; " + e.codesArray[c]);
                 }
             }
             System.out.println();
+            System.out.println(e.sortedCodes.size());
             final DecimalFormat f = new DecimalFormat();
             System.out.println("Done! " + Timer.parseDiff(time / LOOPS));
-            System.out.println("Source size : " + f.format(Files.size(testFromFile)) + " bytes");
-            System.out.println("Destination size : " + f.format(Files.size(testToFile)) + " bytes");
-            System.out.println("Compression rate : " + (100 - 100 * Files.size(testToFile) / Files.size(testFromFile)) + "%");
+            System.out.println("Source size : " + f.format(Files.size(from)) + " bytes");
+            System.out.println("Destination size : " + f.format(Files.size(to)) + " bytes");
+            System.out.println("Compression rate : " + (100 - 100 * Files.size(to) / Files.size(from)) + "%");
         } catch (final IOException e) {
             e.printStackTrace();
         }
