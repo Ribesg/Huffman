@@ -62,7 +62,7 @@ public class Main {
                 final Timer t = new Timer().start();
                 // Encoder.encode(testFromFile, testToFile, true);
                 // Encoder.encode(dictionarySource, dictionaryDest, true);
-                Decoder.decode(miserablesDest, miserablesDecoded, true);
+                new Decoder(miserablesDest, miserablesDecoded, true).decode();
                 t.stop();
                 time += t.nanoDiff();
             }
