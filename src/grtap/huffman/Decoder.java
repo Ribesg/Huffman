@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 public class Decoder {
 
-
     private int                          treeEndPos;
     private final Path                   from;
     private final Path                   to;
@@ -89,24 +88,24 @@ public class Decoder {
 
             BitArray curCode = new BitArray(2);
             for (Entry<Character, Integer> e : charCodesLength.entrySet()) {
-                    for (int i = 0; i < e.getValue(); i++) {
-                        curCode.add(0);
-                        for(BitArray b : res.keySet()){
-                        	if(curCode.isPrefixedBy(b)){
-                                curCode.remove();
-                                curCode.add(1);
-                                break;
-                        	}
+                for (int i = 0; i < e.getValue(); i++) {
+                    curCode.add(0);
+                    for (BitArray b : res.keySet()) {
+                        if (curCode.isPrefixedBy(b)) {
+                            curCode.remove();
+                            curCode.add(1);
+                            break;
                         }
                     }
-                    for(BitArray b : res.keySet()){
-                    	while(b.isPrefixOf(curCode)){
-                    		curCode.increment();
-                    	}
-                    }
-                    res.put(curCode, e.getKey());
-                    curCode = new BitArray(2);
                 }
+                for (BitArray b : res.keySet()) {
+                    while (curCode.isPrefixedBy(b)) {
+                        curCode.increment();
+                    }
+                }
+                res.put(curCode, e.getKey());
+                curCode = new BitArray(2);
+            }
         }
 
         return res;

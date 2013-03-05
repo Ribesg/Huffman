@@ -1,5 +1,6 @@
 package grtap.huffman.util;
 
+// Just a chararcter and its binary code
 public class CharacterCode implements Comparable<CharacterCode> {
 
     private final char     character;
