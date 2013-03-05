@@ -29,8 +29,9 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        //Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
+        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
         Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
+        // Path from = dictionarySource, to = dictionaryDest, decoded = dictionaryDecoded;
 
         // System.out.println("Generating random file...");
         // random(testFromFile, 15_000, true);
@@ -46,7 +47,6 @@ public class Main {
                 t.stop();
                 time += t.nanoDiff();
             }
-            // TreePrinter.printTree(e.huffmanTree);
             for (char c = 0; c < 256; c++) {
                 if (e.codesArray[c] != null) {
                     System.out.println(c + " ; " + e.codesArray[c].length() + " ; " + e.codesArray[c]);
@@ -59,6 +59,8 @@ public class Main {
             System.out.println("Source size : " + f.format(Files.size(from)) + " bytes");
             System.out.println("Destination size : " + f.format(Files.size(to)) + " bytes");
             System.out.println("Compression rate : " + (100 - 100 * Files.size(to) / Files.size(from)) + "%");
+
+            // TreePrinter.printTree(e.huffmanTree);
         } catch (final IOException e) {
             e.printStackTrace();
         }

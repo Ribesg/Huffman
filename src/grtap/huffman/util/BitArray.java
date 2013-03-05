@@ -166,15 +166,16 @@ public class BitArray implements Comparable<BitArray> {
 
     @Override
     public String toString() {
+        byte b;
         final StringBuilder s = new StringBuilder(bits.length * Byte.SIZE);
         for (int i = 0; i < lastByte; i++) {
             for (int j = Byte.SIZE - 1; j >= 0; j--) {
-                final byte b = bits[i];
+                b = bits[i];
                 s.append((b >> j & 1) == 0 ? '0' : '1');
             }
         }
         for (int j = Byte.SIZE - 1; j >= lastBit; j--) {
-            final byte b = bits[lastByte];
+            b = bits[lastByte];
             s.append((b >> j & 1) == 0 ? '0' : '1');
         }
         return s.toString();
@@ -223,8 +224,11 @@ public class BitArray implements Comparable<BitArray> {
     public int compareTo(final BitArray o) {
         int res;
         int i = 0;
+        int thisByte, otherByte;
         while (true) {
-            res = Byte.compare(i < bits.length ? bits[i] : 0x00, i < o.bits.length ? o.bits[i] : 0x00);
+            thisByte = (i < bits.length ? bits[i] : 0) & 0xFF;
+            otherByte = (i < o.bits.length ? o.bits[i] : 0) & 0xFF;
+            res = Integer.compare(thisByte, otherByte);
             i++;
             if (res != 0) {
                 return res;
