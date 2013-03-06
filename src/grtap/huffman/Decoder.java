@@ -17,9 +17,9 @@ import java.util.TreeSet;
 
 public class Decoder {
 
-    private int                          treeLength;
-    private final Path                   from;
-    private final Path                   to;
+    private int                                     treeLength;
+    private final Path                              from;
+    private final Path                              to;
     private ArrayList<HashMap<BitArray, Character>> codes;
 
     public Decoder(final Path from, final Path to) {
@@ -50,28 +50,28 @@ public class Decoder {
             byte[] readBuffer = new byte[1024];
             int writeBufferPos = 0;
             Character curChar;
-            BitArray curCode = new BitArray();            
-            
-            reader.skip(treeLength); 	//position the reader after the tree
-            
-            int lengthByte;            
-        	lengthByte = reader.read(readBuffer);            
-            while(lengthByte == readBuffer.length){
-        	for(byte b : readBuffer){															// read each byte in file
-            		for(int i = 0; i < Byte.SIZE; i++){
-            			curCode.add((b&1<<i)==0?0:1);											// add each bit to current code
-            			if((curChar = codes.get(curCode.length()).get(curCode)) != null){		// if current code is a valid one, i.e. present in our HashMap List
-        				writeBuffer[writeBufferPos++] = curChar;								// add it to the writeBuffer
-            				if(writeBufferPos == 8192){
-            					writer.write(writeBuffer);										// write in destination file when writeBuffer is full
-            					writeBufferPos = 0;												// reset
-            				}
-            			}
-            		}
-            	}
-            	lengthByte = reader.read(readBuffer);
+            BitArray curCode = new BitArray();
+
+            reader.skip(treeLength); // position the reader after the tree
+
+            int lengthByte;
+            lengthByte = reader.read(readBuffer);
+            while (lengthByte == readBuffer.length) {
+                for (byte b : readBuffer) { // read each byte in file
+                    for (int i = 0; i < Byte.SIZE; i++) {
+                        curCode.add((b & 1 << i) == 0 ? 0 : 1); // add each bit to current code
+                        if ((curChar = codes.get(curCode.length()).get(curCode)) != null) { // if current code is a valid one, i.e. present in our HashMap List
+                            writeBuffer[writeBufferPos++] = curChar; // add it to the writeBuffer
+                            if (writeBufferPos == 8192) {
+                                writer.write(writeBuffer); // write in destination file when writeBuffer is full
+                                writeBufferPos = 0; // reset
+                            }
+                        }
+                    }
+                }
+                lengthByte = reader.read(readBuffer);
             }
-    		writer.write(writeBuffer,0,writeBufferPos);			// write remaining chars
+            writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
         }
     }
 
@@ -80,29 +80,29 @@ public class Decoder {
         try (final BufferedReader reader = Files.newBufferedReader(from, CHARSET)) {
             treeLength = reader.read(); // first int in file is the length of the tree, including this first int
 
-            char[] treeString = new char[treeLength-1];
+            char[] treeString = new char[treeLength];
 
             reader.read(treeString);
 
             TreeSet<CharacterCode> characterCodes = new Tree(treeString).getCharacterCodes();
             int length = 0;
             int l;
-            for(CharacterCode c : characterCodes){ //find maximum code length
-            	l=c.getCode().length();
-            	if(l > length){
-            		length = l;
-            	}
+            for (CharacterCode c : characterCodes) { // find maximum code length
+                l = c.getCode().length();
+                if (l > length) {
+                    length = l;
+                }
             }
-            
-            codes = new ArrayList<HashMap<BitArray,Character>>(length); 
-            
-            for(CharacterCode c : characterCodes)
-            {
-            	l = c.getCode().length();
-            	if(codes.get(l) == null){
-            		codes.add(l, new HashMap<BitArray,Character>());
-            	}
-            	codes.get(l).put(c.getCode(), c.getChar());
+
+            // TODO Array en mousse
+            codes = new ArrayList<HashMap<BitArray, Character>>(length);
+
+            for (CharacterCode c : characterCodes) {
+                l = c.getCode().length();
+                if (l >= codes.size() || codes.get(l) == null) {
+                    codes.set(l, new HashMap<BitArray, Character>());
+                }
+                codes.get(l).put(c.getCode(), c.getChar());
             }
         }
     }
