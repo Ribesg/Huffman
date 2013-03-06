@@ -19,12 +19,19 @@ public class Leaf extends Node {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int height() {
         return 0;
     }
 
+    @Override
     public char getLeftChar() {
         return val;
+    }
+
+    @Override
+    public boolean insert(char character, int level) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -65,4 +72,5 @@ public class Leaf extends Node {
     public char getVal() {
         return val;
     }
+
 }

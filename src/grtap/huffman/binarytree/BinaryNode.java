@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 // This class represents a Node which have 2 children
 public class BinaryNode extends Node {
-    private final Node left, right;
+    private Node left, right;
 
     public BinaryNode(final Node leftChild, final Node rightChild) {
         left = leftChild;
@@ -32,12 +32,46 @@ public class BinaryNode extends Node {
         return codes;
     }
 
+    @Override
     public int height() {
         return Math.max(left.height(), right.height()) + 1;
     }
 
+    @Override
     public char getLeftChar() {
         return left.getLeftChar();
+    }
+
+    @Override
+    public boolean insert(char character, int level) {
+        if (level == 1) { // Char should be one of sons
+            // We checked isFull at the previous level so one of them is null
+            if (left == null) {
+                left = new Leaf(character);
+            } else { // right == null
+                right = new Leaf(character);
+                isFull = true;
+            }
+            return isFull;
+        } else {
+            if (left == null) {
+                left = new BinaryNode(null, null);
+                left.insert(character, level - 1);
+                return false;
+            } else if (!left.isFull) {
+                left.insert(character, level - 1);
+                return false;
+            } else if (right == null) {
+                right = new BinaryNode(null, null);
+                right.insert(character, level - 1);
+                return false;
+            } else if (!right.isFull) {
+                isFull = right.insert(character, level - 1);
+                return isFull;
+            } else {
+                throw new IllegalArgumentException("Malformed file");
+            }
+        }
     }
 
     @Override

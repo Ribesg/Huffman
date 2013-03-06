@@ -8,7 +8,8 @@ import java.util.TreeSet;
 // This abstract class represents any Node in the Tree
 public abstract class Node {
 
-    protected Type type;
+    protected Type    type;
+    protected boolean isFull = false;
 
     protected enum Type {
         LEAF, BINARYNODE,
@@ -41,4 +42,6 @@ public abstract class Node {
     public abstract char getVal();
 
     public abstract TreeSet<CharacterCode> getCharacterCodes(final TreeSet<CharacterCode> codes, final BitArray codePrefix);
+
+    public abstract boolean insert(char character, int level);
 }

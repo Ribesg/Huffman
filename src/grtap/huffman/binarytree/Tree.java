@@ -3,6 +3,8 @@ package grtap.huffman.binarytree;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
 
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
 public class Tree implements Comparable<Tree> {
@@ -19,6 +21,20 @@ public class Tree implements Comparable<Tree> {
     public Tree(final Tree left, final Tree right) {
         root = new BinaryNode(left.root, right.root);
         priority = left.priority + right.priority;
+    }
+
+    // Build a Tree from its String representation
+    // => stringRepresentation.length() % 2 == 0
+    public Tree(char[] stringRepresentation) {
+        priority = 0; // No use
+        LinkedHashMap<Character, Integer> map = new LinkedHashMap<Character, Integer>();
+        for (int i = 0; i < stringRepresentation.length; i += 2) {
+            map.put(stringRepresentation[i], (int) stringRepresentation[i + 1]);
+        }
+        root = new BinaryNode(null, null);
+        for (Entry<Character, Integer> e : map.entrySet()) {
+            root.insert(e.getKey(), e.getValue());
+        }
     }
 
     public TreeSet<CharacterCode> getCharacterCodes() {
