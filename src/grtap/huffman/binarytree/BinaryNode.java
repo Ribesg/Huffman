@@ -58,14 +58,14 @@ public class BinaryNode extends Node {
                 left = new BinaryNode(null, null);
                 left.insert(character, level - 1);
                 return false;
-            } else if (!left.isFull) {
+            } else if (!left.isLeaf() && !left.isFull) {
                 left.insert(character, level - 1);
                 return false;
             } else if (right == null) {
                 right = new BinaryNode(null, null);
                 right.insert(character, level - 1);
                 return false;
-            } else if (!right.isFull) {
+            } else if (!right.isLeaf() && !right.isFull) {
                 isFull = right.insert(character, level - 1);
                 return isFull;
             } else {

@@ -52,16 +52,17 @@ public class Decoder {
             Character curChar;
             BitArray curCode = new BitArray();
 
-            reader.skip(treeLength); // position the reader after the tree
+            reader.skip(treeLength+1); // position the reader after the tree
 
             int lengthByte;
             lengthByte = reader.read(readBuffer);
             while (lengthByte == readBuffer.length) {
                 for (byte b : readBuffer) { // read each byte in file
-                    for (int i = 0; i < Byte.SIZE; i++) {
+                    for (int i = Byte.SIZE-1; i >=0; i--) {
                         curCode.add((b & 1 << i) == 0 ? 0 : 1); // add each bit to current code
-                        if ((curChar = codes.get(curCode.length()).get(curCode)) != null) { // if current code is a valid one, i.e. present in our HashMap List
+                        if ((curChar = codes.get(curCode.length()-1).get(curCode)) != null) { // if current code is a valid one, i.e. present in our HashMap List
                             writeBuffer[writeBufferPos++] = curChar; // add it to the writeBuffer
+                            curCode.clear();
                             if (writeBufferPos == 8192) {
                                 writer.write(writeBuffer); // write in destination file when writeBuffer is full
                                 writeBufferPos = 0; // reset
@@ -71,6 +72,22 @@ public class Decoder {
                 }
                 lengthByte = reader.read(readBuffer);
             }
+            //treat remaining bytes
+            for(byte b : readBuffer){
+            	for(int i = Byte.SIZE-1; i >= 0; i--){
+            		curCode.add((b & 1 << i) == 0 ? 0 : 1);
+            		 if ((curChar = codes.get(curCode.length()-1).get(curCode)) != null) { 
+                         writeBuffer[writeBufferPos++] = curChar; 
+                         curCode.clear();
+                         if (writeBufferPos == 8192) {
+                             writer.write(writeBuffer);
+                             writeBufferPos = 0; 
+                         }
+                     }
+            	}
+            }
+            //TODO : too much is read, stop at end of file :)
+            //TODO : encoding is bullshit
             writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
         }
     }
@@ -94,15 +111,13 @@ public class Decoder {
                 }
             }
 
-            // TODO Array en mousse
             codes = new ArrayList<HashMap<BitArray, Character>>(length);
+            for(int i = 0; i < length; i++){
+            	codes.add(new HashMap<BitArray,Character>());
+            }
 
             for (CharacterCode c : characterCodes) {
-                l = c.getCode().length();
-                if (l >= codes.size() || codes.get(l) == null) {
-                    codes.set(l, new HashMap<BitArray, Character>());
-                }
-                codes.get(l).put(c.getCode(), c.getChar());
+                codes.get(c.getCode().length()-1).put(c.getCode(), c.getChar());
             }
         }
     }

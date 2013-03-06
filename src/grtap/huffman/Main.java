@@ -1,5 +1,6 @@
 package grtap.huffman;
 
+import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.Timer;
 
 import java.io.BufferedWriter;
@@ -53,6 +54,7 @@ public class Main {
                 }
             }
             System.out.println();
+           // TreePrinter.printTree(e.huffmanTree);
             System.out.println(e.sortedCodes.size());
             final DecimalFormat f = new DecimalFormat();
             System.out.println("Done! " + Timer.parseDiff(time / LOOPS));

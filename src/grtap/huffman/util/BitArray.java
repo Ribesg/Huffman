@@ -27,9 +27,13 @@ public class BitArray implements Comparable<BitArray> {
     }
 
     public void clear() {
-        Arrays.fill(bits, (byte) 0);
+        bits = new byte[1];
         lastByte = 0;
         lastBit = Byte.SIZE;
+    }
+    
+    public void clear(final int size){
+    	
     }
 
     // Used in clone()
