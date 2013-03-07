@@ -49,12 +49,16 @@ public class Encoder {
         // Count the number of occurences of each character in the file
         countCharactersInFile();
 
+        
         // Build the tree from this count
         buildTree();
 
         // Get the character codes from the tree
         sortedCodes = huffmanTree.getCharacterCodes();
-
+        
+        if(sortedCodes.size() == 1){				//If only one char in file, its code is 0
+        	sortedCodes.first().getCode().add(0);
+        }
         // Write the Tree to the file
         writeTree();
 
