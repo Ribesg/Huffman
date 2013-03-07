@@ -1,6 +1,5 @@
 package grtap.huffman;
 
-import grtap.huffman.binarytree.TreePrinter;
 import grtap.huffman.util.Timer;
 
 import java.io.BufferedWriter;
@@ -14,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
-    public final static int LOOPS = 1;
+    public final static int LOOPS = 20;
 
     @SuppressWarnings("unused")
     public static void main(final String[] args) {
@@ -30,8 +29,8 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
-        // Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
+        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
+        Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
         // Path from = dictionarySource, to = dictionaryDest, decoded = dictionaryDecoded;
 
         // System.out.println("Generating random file...");
@@ -39,14 +38,22 @@ public class Main {
 
         System.out.println("Encoding...");
         try {
-            long time = 0;
+            long timeEncoding = 0, timeDecoding = 0;
             Encoder e = null;
+            Decoder d = null;
             for (int i = 0; i < LOOPS; i++) {
-                final Timer t = new Timer().start();
+                final Timer tE = new Timer().start();
                 e = new Encoder(from, to, true);
                 e.encode();
-                t.stop();
-                time += t.nanoDiff();
+                tE.stop();
+                timeEncoding += tE.nanoDiff();
+            }
+            for (int i = 0; i < LOOPS; i++) {
+                final Timer tD = new Timer().start();
+                d = new Decoder(to, decoded, true);
+                d.decode();
+                tD.stop();
+                timeDecoding += tD.nanoDiff();
             }
             for (char c = 0; c < 256; c++) {
                 if (e.codesArray[c] != null) {
@@ -54,25 +61,16 @@ public class Main {
                 }
             }
             System.out.println();
-           // TreePrinter.printTree(e.huffmanTree);
+            // TreePrinter.printTree(e.huffmanTree);
             System.out.println(e.sortedCodes.size());
             final DecimalFormat f = new DecimalFormat();
-            System.out.println("Done! " + Timer.parseDiff(time / LOOPS));
+            System.out.println("Done! Encoding: " + Timer.parseDiff(timeEncoding / LOOPS) + "; Decoding: " + Timer.parseDiff(timeDecoding / LOOPS));
             System.out.println("Source size : " + f.format(Files.size(from)) + " bytes");
             System.out.println("Destination size : " + f.format(Files.size(to)) + " bytes");
+            System.out.println("Decoded size : " + f.format(Files.size(decoded)) + " bytes");
             System.out.println("Compression rate : " + (100 - 100 * Files.size(to) / Files.size(from)) + "%");
 
             // TreePrinter.printTree(e.huffmanTree);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Decoding...");
-        try {
-            Timer t = new Timer().start();
-            new Decoder(to, decoded, true).decode();
-            t.stop();
-            System.out.println("Done! " + t.diffString());
         } catch (final IOException e) {
             e.printStackTrace();
         }

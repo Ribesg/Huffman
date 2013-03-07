@@ -31,10 +31,6 @@ public class BitArray implements Comparable<BitArray> {
         lastByte = 0;
         lastBit = Byte.SIZE;
     }
-    
-    public void clear(final int size){
-    	
-    }
 
     // Used in clone()
     private BitArray(final BitArray o) {
@@ -70,12 +66,14 @@ public class BitArray implements Comparable<BitArray> {
             lastByte = o.lastByte;
             lastBit = o.lastBit;
         } else {
-            ensureCapacity(lastByte + o.lastByte);
+            ensureCapacity(lastByte + o.lastByte + 2);
             byte mask = (byte) (0xFF << Byte.SIZE - lastBit);
 
             for (int i = 0; i <= o.lastByte; i++) {
                 byte other = o.bits[i];
-                bits[lastByte + i] |= (other & mask) >> Byte.SIZE - lastBit;
+                byte tmp = (byte) (other & mask);
+                tmp = (byte) ((tmp & 0xFF) >>> Byte.SIZE - lastBit);
+                bits[lastByte + i] |= tmp;
                 bits[lastByte + i + 1] = (byte) (o.bits[i] << lastBit);
             }
             lastByte = lastByte + o.lastByte + 1;
