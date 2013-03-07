@@ -146,22 +146,24 @@ public class DecoderImpl implements Decoder {
 			reader.read(treeString);
 			printTime();
 
+			//then, we create the tree from the string we just read, and use the getCharacterCodes() method
 			printMessage("Building Tree and Codes... ");
 			final TreeSet<CharacterCode> characterCodes = new Tree(treeString).getCharacterCodes();
-			int length = 0;
+			int maxLength = 0;
 			int l;
 			for (final CharacterCode c : characterCodes) { // find maximum code length
 				l = c.getCode().length();
-				if (l > length) {
-					length = l;
+				if (l > maxLength) {
+					maxLength = l;
 				}
 			}
 			printTime();
 
+			//finally, we place each code in a HashMap for easier access during translation
 			printMessage("Transforming codes for translation... ");
-			codes = new ArrayList<HashMap<BitArray, Character>>(length);
-			for (int i = 0; i < length; i++) {
-				codes.add(new HashMap<BitArray, Character>());
+			codes = new ArrayList<HashMap<BitArray, Character>>(maxLength);
+			for (int i = 0; i < maxLength; i++) {
+				codes.add(new HashMap<BitArray, Character>()); //one hashmap per code length
 			}
 
 			for (final CharacterCode c : characterCodes) {
