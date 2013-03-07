@@ -134,11 +134,6 @@ public class BitArray implements Comparable<BitArray> {
         return (byte) (b & ~(1 << pos));
     }
 
-    // Get the value of a bit
-    private int get(final byte b, final int pos) {
-        return (b & 1 << pos) == 0 ? 0 : 1;
-    }
-
     // Get a byte[] of all the "complete" bytes of the array
     // Remove those first bytes from the array
     public byte[] pollByteArray() {
@@ -160,7 +155,7 @@ public class BitArray implements Comparable<BitArray> {
     }
 
     public boolean hasRemainingByte() {
-        return !(lastByte > 0 || lastBit != Byte.SIZE);
+        return lastBit != Byte.SIZE || lastBit != 0;
     }
 
     public byte getLastByte() {
@@ -169,29 +164,6 @@ public class BitArray implements Comparable<BitArray> {
 
     public int getLastByteLength() {
         return Byte.SIZE - lastBit;
-    }
-
-    // TODO Euh ca lag quand meme un peu
-    public boolean isPrefixedBy(BitArray o) {
-        return this.toString().startsWith(o.toString());
-    }
-
-    public void increment() {
-        boolean done = false;
-        int iByte = lastByte, iBit = lastBit;
-        while (!done) {
-            if (get(bits[iByte], iBit) == 0) {
-                bits[iByte] = set(bits[iByte], iBit);
-                break;
-            } else {
-                bits[iByte] = clear(bits[iByte], iBit);
-                iBit++;
-                if (iBit == Byte.SIZE) {
-                    iByte--;
-                    iBit = 0;
-                }
-            }
-        }
     }
 
     @Override

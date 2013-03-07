@@ -3,6 +3,7 @@ package grtap.huffman;
 import grtap.huffman.binarytree.Tree;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
+import grtap.huffman.util.Timer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,19 +13,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.TreeSet;
 
 public class Encoder {
 
-    public final static Charset      CHARSET = StandardCharsets.ISO_8859_1;
+    public final static Charset    CHARSET = StandardCharsets.ISO_8859_1;
 
-    protected Path                   sourceFile;
-    protected Path                   destinationFile;
+    private final Path             sourceFile;
+    private final Path             destinationFile;
 
-    protected int[]                  characterCount;
-    protected Tree                   huffmanTree;
-    protected TreeSet<CharacterCode> sortedCodes;
-    protected BitArray[]             codesArray;
+    private final int[]            characterCount;
+    private Tree                   huffmanTree;
+    private TreeSet<CharacterCode> sortedCodes;
+    private final BitArray[]       codesArray;
+    private Timer                  localTimer, totalTimer;
 
     public Encoder(final Path from, final Path to) {
         this(from, to, false);
@@ -46,24 +49,35 @@ public class Encoder {
 
     // Dest : Tree size + separator + tree + encoded file
     public void encode() throws IOException {
+        System.out.println("Starting compression of file \"" + sourceFile.getFileName() + "\" to \"" + destinationFile.getFileName() + "\"");
+        totalTimer = new Timer().start();
         // Count the number of occurences of each character in the file
+        printMessage("Counting characters in file " + sourceFile.getFileName() + "... ");
         countCharactersInFile();
+        printTime();
 
         // Build the tree from this count
+        printMessage("Building Huffman Tree from character count... ");
         buildTree();
+        printTime();
 
         // Get the character codes from the tree
+        printMessage("Generating character codes from tree... ");
         sortedCodes = huffmanTree.getCharacterCodes();
+        printTime();
 
         if (sortedCodes.size() == 1) { // TODO: maybe create a tree with one node and one leaf ?
             throw new IllegalArgumentException("File content not supported");
         }
         // Write the Tree to the file
+        printMessage("Writing tree string representation as output file header... ");
         writeTree();
+        printTime();
 
         // Create the codesArray for encoding
         createCodeArray();
         // Encode source file
+        printMessage("Encoding source file... ");
         try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET);
                 final FileOutputStream writer = new FileOutputStream(destinationFile.toFile(), true)) {
             final char[] readBuffer = new char[8192];
@@ -83,11 +97,27 @@ public class Encoder {
                 // Last byte does not contain 8 interesting bits
                 int lastByteLength = writeBuffer.getLastByteLength();
                 writer.write(writeBuffer.getLastByte());
-                writer.write((byte) lastByteLength);
+                writer.write((byte) Byte.SIZE - lastByteLength);
             } else {
                 // Last byte is full
                 writer.write(0x00);
             }
+        }
+        printTime();
+        System.out.println("Compression successful !\n    Time: " + totalTimer.stop().diffString() + "\n    Compression rate: "
+                + new DecimalFormat("#0.00").format(100 - 100.0 * Files.size(destinationFile) / Files.size(sourceFile)) + "%");
+    }
+
+    private void printMessage(String s) {
+        if (Main.VERBOSE) {
+            System.out.println('\t' + s);
+            localTimer = new Timer().start();
+        }
+    }
+
+    private void printTime() {
+        if (Main.VERBOSE) {
+            System.out.println("\t    Time: " + localTimer.stop().diffString());
         }
     }
 
