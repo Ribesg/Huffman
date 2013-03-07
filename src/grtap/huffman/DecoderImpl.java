@@ -57,7 +57,7 @@ public class DecoderImpl implements Decoder {
 		try (final FileInputStream reader = new FileInputStream(sourceFile.toFile());
 				final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
 
-			final char[] writeBuffer = new char[CHAR_BUFFER_SIZE]; // TODO:
+			final char[] writeBuffer = new char[CHAR_BUFFER_SIZE];
 			final byte[] readBuffer = new byte[BYTE_BUFFER_SIZE];
 			int writeBufferPos = 0;
 			Character curChar;
