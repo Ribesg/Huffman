@@ -97,7 +97,7 @@ public class Decoder {
             for (int i = Byte.SIZE - 1; i >= lastUsedBitInLastByte; i--) {
                 curCode.add((lastByte & 1 << i) == 0 ? 0 : 1);
                 curChar = codes.get(curCode.length() - 1).get(curCode);
-                if ((curChar) != null) {
+                if (curChar != null) {
                     writeBuffer[writeBufferPos++] = curChar;
                     curCode.clear();
                     if (writeBufferPos == 8192) {

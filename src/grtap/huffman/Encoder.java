@@ -55,15 +55,14 @@ public class Encoder {
         // Get the character codes from the tree
         sortedCodes = huffmanTree.getCharacterCodes();
 
-        if (sortedCodes.size() == 1) { // If only one char in file, its code is 0
-            sortedCodes.first().getCode().add(0);
+        if (sortedCodes.size() == 1) { // TODO: maybe create a tree with one node and one leaf ?
+            throw new IllegalArgumentException("File content not supported");
         }
         // Write the Tree to the file
         writeTree();
 
         // Create the codesArray for encoding
         createCodeArray();
-
         // Encode source file
         try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET);
                 final FileOutputStream writer = new FileOutputStream(destinationFile.toFile(), true)) {

@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Main {
-    public final static int LOOPS = 20;
+    public final static int LOOPS = 5;
 
     @SuppressWarnings("unused")
     public static void main(final String[] args) {
@@ -29,15 +29,15 @@ public class Main {
         final Path miserablesDest = Paths.get("LesMiserables.txt.compressed");
         final Path miserablesDecoded = Paths.get("LesMiserables.txt.decompressed");
 
-        Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
-        // Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
+        // Path from = testFromFile, to = testToFile, decoded = testDecodedFile;
+        Path from = miserablesSource, to = miserablesDest, decoded = miserablesDecoded;
         // Path from = dictionarySource, to = dictionaryDest, decoded = dictionaryDecoded;
 
         // System.out.println("Generating random file...");
         // random(testFromFile, 15_000, true);
 
-        System.out.println("Encoding...");
         try {
+            System.out.println("Encoding...");
             long timeEncoding = 0, timeDecoding = 0;
             Encoder e = null;
             Decoder d = null;
@@ -48,6 +48,7 @@ public class Main {
                 tE.stop();
                 timeEncoding += tE.nanoDiff();
             }
+            System.out.println("Decoding...");
             for (int i = 0; i < LOOPS; i++) {
                 final Timer tD = new Timer().start();
                 d = new Decoder(to, decoded, true);
