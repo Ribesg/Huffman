@@ -48,7 +48,6 @@ public class EncoderImpl implements Encoder {
 		codesArray = new BitArray[256];
 	}
 
-	// Dest : Tree size + separator + tree + encoded file
 	@Override
 	public void encode() throws IOException {
 		System.out.println("Starting compression of file \"" + sourceFile.getFileName() + "\" to \"" + destinationFile.getFileName() + "\"");
