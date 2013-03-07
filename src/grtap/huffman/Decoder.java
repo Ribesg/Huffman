@@ -86,8 +86,6 @@ public class Decoder {
                      }
             	}
             }
-            //TODO : too much is read, stop at end of file :)
-            //TODO : encoding is bullshit
             writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
         }
     }

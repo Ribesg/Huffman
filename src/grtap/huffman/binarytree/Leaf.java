@@ -12,6 +12,7 @@ public class Leaf extends Node {
     public Leaf(final char newVal) {
         val = newVal;
         type = Type.LEAF;
+        isFull = true;
     }
 
     @Override
