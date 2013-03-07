@@ -141,7 +141,8 @@ public class DecoderImpl implements Decoder {
 		// First, we read the tree
 		try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET)) {
 			printMessage("Reading Tree String representation... ");
-			treeLength = reader.read(); // first int in file is the length of the tree, including this first int
+			treeLength = reader.read(); // first two int in file are the length of the tree, including those first int's
+			treeLength = (treeLength << Byte.SIZE) | reader.read();
 			final char[] treeString = new char[treeLength];
 			reader.read(treeString);
 			printTime();
