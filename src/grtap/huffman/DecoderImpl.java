@@ -1,6 +1,7 @@
 package grtap.huffman;
 
-import static grtap.huffman.Encoder.CHARSET;
+import static grtap.huffman.EncoderImpl.CHARSET;
+import grtap.huffman.api.Decoder;
 import grtap.huffman.binarytree.Tree;
 import grtap.huffman.util.BitArray;
 import grtap.huffman.util.CharacterCode;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-public class Decoder {
+public class DecoderImpl implements Decoder {
 
     private final static int                        BYTE_BUFFER_SIZE = 2048;
     private final static int                        CHAR_BUFFER_SIZE = BYTE_BUFFER_SIZE * 8;
@@ -27,19 +28,19 @@ public class Decoder {
     private ArrayList<HashMap<BitArray, Character>> codes;
     private Timer                                   localTimer, totalTimer;
 
-    public Decoder(final Path from, final Path to) {
+    public DecoderImpl(final Path from, final Path to) {
         this(from, to, false);
     }
 
-    public Decoder(final Path from, final Path to, final boolean overwrite) {
+    public DecoderImpl(final Path from, final Path to, final boolean overwrite) {
         if (Files.notExists(from)) {
             throw new IllegalArgumentException("Source file not found");
         } else if (Files.exists(to) && !overwrite) {
             throw new IllegalArgumentException("Destination file already exists");
         }
 
-        this.sourceFile = from;
-        this.destinationFile = to;
+        sourceFile = from;
+        destinationFile = to;
     }
 
     public void decode() throws IOException {
@@ -55,18 +56,18 @@ public class Decoder {
         try (final FileInputStream reader = new FileInputStream(sourceFile.toFile());
                 final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
 
-            char[] writeBuffer = new char[CHAR_BUFFER_SIZE]; // TODO:
-            byte[] readBuffer = new byte[BYTE_BUFFER_SIZE];
+            final char[] writeBuffer = new char[CHAR_BUFFER_SIZE]; // TODO:
+            final byte[] readBuffer = new byte[BYTE_BUFFER_SIZE];
             int writeBufferPos = 0;
             Character curChar;
-            BitArray curCode = new BitArray();
+            final BitArray curCode = new BitArray();
 
             reader.skip(treeLength + 1); // position the reader after the tree
 
             int lengthByte;
             lengthByte = reader.read(readBuffer);
             while (lengthByte == readBuffer.length) {
-                for (byte b : readBuffer) { // read each byte in file
+                for (final byte b : readBuffer) { // read each byte in file
                     for (int i = Byte.SIZE - 1; i >= 0; i--) {
                         curCode.add((b & 1 << i) == 0 ? 0 : 1); // add each bit destinationFile current code
                         curChar = codes.get(curCode.length() - 1).get(curCode);
@@ -99,8 +100,8 @@ public class Decoder {
                     }
                 }
             }
-            byte lastByte = readBuffer[lengthByte - 2];
-            byte lastUsedBitInLastByte = readBuffer[lengthByte - 1];
+            final byte lastByte = readBuffer[lengthByte - 2];
+            final byte lastUsedBitInLastByte = readBuffer[lengthByte - 1];
             for (int i = Byte.SIZE - 1; i >= lastUsedBitInLastByte; i--) {
                 curCode.add((lastByte & 1 << i) == 0 ? 0 : 1);
                 curChar = codes.get(curCode.length() - 1).get(curCode);
@@ -119,7 +120,7 @@ public class Decoder {
         System.out.println("Decompression successful !\n    Time: " + totalTimer.stop().diffString());
     }
 
-    private void printMessage(String s) {
+    private void printMessage(final String s) {
         if (Main.VERBOSE) {
             System.out.println('\t' + s);
             localTimer = new Timer().start();
@@ -137,15 +138,15 @@ public class Decoder {
         try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET)) {
             printMessage("Reading Tree String representation... ");
             treeLength = reader.read(); // first int in file is the length of the tree, including this first int
-            char[] treeString = new char[treeLength];
+            final char[] treeString = new char[treeLength];
             reader.read(treeString);
             printTime();
 
             printMessage("Building Tree and Codes... ");
-            TreeSet<CharacterCode> characterCodes = new Tree(treeString).getCharacterCodes();
+            final TreeSet<CharacterCode> characterCodes = new Tree(treeString).getCharacterCodes();
             int length = 0;
             int l;
-            for (CharacterCode c : characterCodes) { // find maximum code length
+            for (final CharacterCode c : characterCodes) { // find maximum code length
                 l = c.getCode().length();
                 if (l > length) {
                     length = l;
@@ -159,7 +160,7 @@ public class Decoder {
                 codes.add(new HashMap<BitArray, Character>());
             }
 
-            for (CharacterCode c : characterCodes) {
+            for (final CharacterCode c : characterCodes) {
                 codes.get(c.getCode().length() - 1).put(c.getCode(), c.getChar());
             }
             printTime();

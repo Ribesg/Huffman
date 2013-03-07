@@ -1,5 +1,8 @@
 package grtap.huffman;
 
+import grtap.huffman.api.Decoder;
+import grtap.huffman.api.Encoder;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,11 +17,11 @@ public class Main {
             return;
         }
         System.out.println();
-        Path from = Paths.get(args[0]);
-        Path to = Paths.get(from.getFileName().toString() + ".compressed");
-        Path decompressed = Paths.get(from.getFileName().toString() + ".decompressed");
+        final Path from = Paths.get(args[0]);
+        final Path to = Paths.get(from.getFileName().toString() + ".compressed");
+        final Path decompressed = Paths.get(from.getFileName().toString() + ".decompressed");
 
-        for (String arg : args) {
+        for (final String arg : args) {
             if (arg.equalsIgnoreCase("-v") || arg.equalsIgnoreCase("--verbose")) {
                 VERBOSE = true;
                 break;
@@ -26,10 +29,10 @@ public class Main {
         }
 
         try {
-            Encoder e = new Encoder(from, to, true);
+            final Encoder e = new EncoderImpl(from, to, true);
             e.encode();
             System.out.println();
-            Decoder d = new Decoder(to, decompressed, true);
+            final Decoder d = new DecoderImpl(to, decompressed, true);
             d.decode();
         } catch (final IOException e) {
             e.printStackTrace();
