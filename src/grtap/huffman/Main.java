@@ -36,9 +36,9 @@ public class Main {
 		Path from = null, to = null;
 		for (final String s : argsList) {
 			if (!s.startsWith("-")) {
-				if (from != null) {
+				if (from == null) {
 					from = Paths.get(s);
-				} else if (to != null) {
+				} else if (to == null) {
 					to = Paths.get(s);
 				} else {
 					System.out.println("Unknown argument : " + s);
