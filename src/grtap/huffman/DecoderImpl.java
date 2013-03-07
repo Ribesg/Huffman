@@ -20,7 +20,7 @@ import java.util.TreeSet;
 public class DecoderImpl implements Decoder {
 
 	private final static int						BYTE_BUFFER_SIZE	= 2048;
-	private final static int						CHAR_BUFFER_SIZE	= BYTE_BUFFER_SIZE * 8;
+	private final static int						CHAR_BUFFER_SIZE	= BYTE_BUFFER_SIZE * 8;	//1 char = 8 bits; 1 code = 1 bit minimum
 
 	private int										treeLength;
 	private final Path								sourceFile;
@@ -141,7 +141,7 @@ public class DecoderImpl implements Decoder {
 		// First, we read the tree
 		try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET)) {
 			printMessage("Reading Tree String representation... ");
-			treeLength = reader.read(); // first two int in file are the length of the tree, including those first int's
+			treeLength = reader.read(); // first two int's in file are the length of the tree
 			treeLength = (treeLength << Byte.SIZE) | reader.read();
 			final char[] treeString = new char[treeLength];
 			reader.read(treeString);
@@ -160,14 +160,14 @@ public class DecoderImpl implements Decoder {
 			}
 			printTime();
 
-			//finally, we place each code in a HashMap for easier access during translation
+			//We create a List of HashMaps to store pairs of codes and characters for easier access during translation
 			printMessage("Transforming codes for translation... ");
 			codes = new ArrayList<HashMap<BitArray, Character>>(maxLength);
 			for (int i = 0; i < maxLength; i++) {
 				codes.add(new HashMap<BitArray, Character>()); //one hashmap per code length
 			}
 
-			for (final CharacterCode c : characterCodes) {
+			for (final CharacterCode c : characterCodes) {//finally, we place each code in a HashMap correspond to its code's length
 				codes.get(c.getCode().length() - 1).put(c.getCode(), c.getChar());
 			}
 			printTime();

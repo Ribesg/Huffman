@@ -94,13 +94,13 @@ public class EncoderImpl implements Encoder {
 				for (int i = 0; i < length; i++) {
 					writeBuffer.add(codesArray[readBuffer[i]]);
 				}
-				writer.write(writeBuffer.pollByteArray());
+				writer.write(writeBuffer.pollByteArray()); //pollByteArray removes the bytes it returns
 			} while (length == readBuffer.length);
 			if (writeBuffer.hasRemainingByte()) {
 				// Last byte does not contain 8 interesting bits
 				final int lastByteLength = writeBuffer.getLastByteLength();
-				writer.write(writeBuffer.getLastByte());
-				writer.write((byte) Byte.SIZE - lastByteLength);
+				writer.write(writeBuffer.getLastByte());		//write the last byte
+				writer.write((byte) Byte.SIZE - lastByteLength);//write the number of interesting bits in the last byte
 			} else {
 				// Last byte is full
 				writer.write(0x00);
