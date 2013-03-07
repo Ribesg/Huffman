@@ -99,7 +99,7 @@ public class EncoderImpl implements Encoder {
 			if (writeBuffer.hasRemainingByte()) {
 				// Last byte does not contain 8 interesting bits
 				final int lastByteLength = writeBuffer.getLastByteLength();
-				writer.write(writeBuffer.getLastByte());		//write the last byte
+				writer.write(writeBuffer.getLastByte()); //write the last byte
 				writer.write((byte) Byte.SIZE - lastByteLength);//write the number of interesting bits in the last byte
 			} else {
 				// Last byte is full

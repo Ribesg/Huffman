@@ -20,7 +20,7 @@ import java.util.TreeSet;
 public class DecoderImpl implements Decoder {
 
 	private final static int						BYTE_BUFFER_SIZE	= 2048;
-	private final static int						CHAR_BUFFER_SIZE	= BYTE_BUFFER_SIZE * 8;	//1 char = 8 bits; 1 code = 1 bit minimum
+	private final static int						CHAR_BUFFER_SIZE	= BYTE_BUFFER_SIZE * 8; //1 char = 8 bits; 1 code = 1 bit minimum
 
 	private int										treeLength;
 	private final Path								sourceFile;
@@ -142,7 +142,7 @@ public class DecoderImpl implements Decoder {
 		try (final BufferedReader reader = Files.newBufferedReader(sourceFile, CHARSET)) {
 			printMessage("Reading Tree String representation... ");
 			treeLength = reader.read(); // first two int's in file are the length of the tree
-			treeLength = (treeLength << Byte.SIZE) | reader.read();
+			treeLength = treeLength << Byte.SIZE | reader.read();
 			final char[] treeString = new char[treeLength];
 			reader.read(treeString);
 			printTime();
