@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface Decoder {
 
-    public void decode() throws IOException;
+	public void decode() throws IOException;
 
 }

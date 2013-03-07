@@ -8,40 +8,40 @@ import java.util.TreeSet;
 // This abstract class represents any Node in the Tree
 public abstract class Node {
 
-    protected Type    type;
-    protected boolean isFull = false;
+	protected Type		type;
+	protected boolean	isFull	= false;
 
-    protected enum Type {
-        LEAF, BINARYNODE,
-    }
+	protected enum Type {
+		LEAF, BINARYNODE,
+	}
 
-    // Force subclasses to implement equals
-    @Override
-    public abstract boolean equals(final Object o);
+	// Force subclasses to implement equals
+	@Override
+	public abstract boolean equals(final Object o);
 
-    // Force subclasses to implement hashCode
-    @Override
-    public abstract int hashCode();
+	// Force subclasses to implement hashCode
+	@Override
+	public abstract int hashCode();
 
-    public boolean isLeaf() {
-        return type == Type.LEAF;
-    }
+	public boolean isLeaf() {
+		return type == Type.LEAF;
+	}
 
-    public abstract int height();
+	public abstract int height();
 
-    public abstract char getLeftChar();
+	public abstract char getLeftChar();
 
-    // Following methods are common to all Node
-    // To have a clear code without tons of casts
-    // /!\ Should never be called without a check to isLeaf() before
+	// Following methods are common to all Node
+	// To have a clear code without tons of casts
+	// /!\ Should never be called without a check to isLeaf() before
 
-    public abstract Node getLeft();
+	public abstract Node getLeft();
 
-    public abstract Node getRight();
+	public abstract Node getRight();
 
-    public abstract char getVal();
+	public abstract char getVal();
 
-    public abstract TreeSet<CharacterCode> getCharacterCodes(final TreeSet<CharacterCode> codes, final BitArray codePrefix);
+	public abstract TreeSet<CharacterCode> getCharacterCodes(final TreeSet<CharacterCode> codes, final BitArray codePrefix);
 
-    public abstract boolean insert(char character, int level);
+	public abstract boolean insert(final char character, final int level);
 }

@@ -1,1 +1,5 @@
 bin
+*.txt
+*.compressed
+*.decompressed
+*.jar
