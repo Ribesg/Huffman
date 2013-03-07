@@ -7,9 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+// Specific Huffman Tree implementation
+// Internal nodes have no value but 2 sons
+// Leaves have a value and no sons
 public class Tree implements Comparable<Tree> {
 	protected final Node	root;
-	protected final int		priority;
+	protected final int		priority;	// Used in the Huffman Tree building from 1-char-trees
 
 	// Build a Tree with one value
 	public Tree(final char val, final int prior) {
@@ -26,17 +29,21 @@ public class Tree implements Comparable<Tree> {
 	// Build a Tree from its String representation
 	// => stringRepresentation.length() % 2 == 0
 	public Tree(final char[] stringRepresentation) {
-		priority = 0; // No use
+		priority = 0; // No use in this Tree
+		// Transform the String to a usable data structure
+		// Character ; Level
 		final LinkedHashMap<Character, Integer> map = new LinkedHashMap<Character, Integer>();
 		for (int i = 0; i < stringRepresentation.length; i += 2) {
 			map.put(stringRepresentation[i], (int) stringRepresentation[i + 1]);
 		}
+		// Insert each character into the Tree
 		root = new BinaryNode(null, null);
 		for (final Entry<Character, Integer> e : map.entrySet()) {
 			root.insert(e.getKey(), e.getValue());
 		}
 	}
 
+	// Returns the character codes for each character in Tree
 	public TreeSet<CharacterCode> getCharacterCodes() {
 		final TreeSet<CharacterCode> codes = new TreeSet<CharacterCode>();
 		if (root.isLeaf()) {

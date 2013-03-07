@@ -59,8 +59,8 @@ public class BitArray implements Comparable<BitArray> {
 		return this; // Chain call
 	}
 
-	// TODO There is certainly a faster and more complicated way
-	public BitArray add(final BitArray o) {
+	// Add another BitArray to this one
+	public void add(final BitArray o) {
 		if (lastByte == 0 && lastBit == Byte.SIZE) {
 			System.arraycopy(o.bits, 0, bits, 0, o.lastByte + 1);
 			lastByte = o.lastByte;
@@ -81,27 +81,6 @@ public class BitArray implements Comparable<BitArray> {
 				lastByte--;
 			}
 			lastBit = (lastBit + o.lastBit) % Byte.SIZE;
-		}
-
-		// for (int i = 0; i < o.lastByte; i++) {
-		// for (int j = Byte.SIZE - 1; j >= 0; j--) {
-		// final byte b = o.bits[i];
-		// add((b >> j & 1) == 0 ? 0 : 1);
-		// }
-		// }
-		// for (int j = Byte.SIZE - 1; j >= o.lastBit; j--) {
-		// final byte b = o.bits[o.lastByte];
-		// add((b >> j & 1) == 0 ? 0 : 1);
-		// }
-		return this;
-	}
-
-	// removes last bit from the BitArray
-	public void remove() {
-		bits[lastByte] = clear(bits[lastByte], lastBit);
-		if (lastBit++ == Byte.SIZE) {
-			lastBit = 0;
-			lastByte--;
 		}
 	}
 
@@ -127,11 +106,6 @@ public class BitArray implements Comparable<BitArray> {
 	// Sets the bit at position 'pos' in the byte 'b'
 	private byte set(final byte b, final int pos) {
 		return (byte) (b | 1 << pos);
-	}
-
-	// Clears the bit at position 'pos' in the byte 'b'
-	private byte clear(final byte b, final int pos) {
-		return (byte) (b & ~(1 << pos));
 	}
 
 	// Get a byte[] of all the "complete" bytes of the array
@@ -222,6 +196,8 @@ public class BitArray implements Comparable<BitArray> {
 		return true;
 	}
 
+	// Compare the bitArray byte per byte
+	// We don't care about the size and suppose all bits after lastBit are 0s
 	@Override
 	public int compareTo(final BitArray o) {
 		int res;

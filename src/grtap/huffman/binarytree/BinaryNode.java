@@ -12,7 +12,6 @@ public class BinaryNode extends Node {
 	public BinaryNode(final Node leftChild, final Node rightChild) {
 		left = leftChild;
 		right = rightChild;
-		type = Type.BINARYNODE;
 	}
 
 	@Override
@@ -38,11 +37,6 @@ public class BinaryNode extends Node {
 	}
 
 	@Override
-	public char getLeftChar() {
-		return left.getLeftChar();
-	}
-
-	@Override
 	public boolean insert(final char character, final int level) {
 		if (level == 1) { // Char should be one of sons
 			// We checked isFull at the previous level so one of them is null
@@ -54,6 +48,7 @@ public class BinaryNode extends Node {
 			}
 			return isFull;
 		} else {
+			// First try to insert left
 			if (left == null) {
 				left = new BinaryNode(null, null);
 				left.insert(character, level - 1);
@@ -61,17 +56,26 @@ public class BinaryNode extends Node {
 			} else if (!left.isFull) {
 				left.insert(character, level - 1);
 				return false;
-			} else if (right == null) {
+			}
+			// Left is full, try to insert right
+			else if (right == null) {
 				right = new BinaryNode(null, null);
 				right.insert(character, level - 1);
 				return false;
 			} else if (!right.isFull) {
 				isFull = right.insert(character, level - 1);
 				return isFull;
-			} else {
+			}
+			// This could only happen if the Tree String was malformed / transformed
+			else {
 				throw new IllegalArgumentException("Malformed file");
 			}
 		}
+	}
+
+	@Override
+	public boolean isLeaf() {
+		return false;
 	}
 
 	@Override

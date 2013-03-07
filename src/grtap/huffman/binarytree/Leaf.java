@@ -11,7 +11,6 @@ public class Leaf extends Node {
 
 	public Leaf(final char newVal) {
 		val = newVal;
-		type = Type.LEAF;
 		isFull = true;
 	}
 
@@ -26,13 +25,13 @@ public class Leaf extends Node {
 	}
 
 	@Override
-	public char getLeftChar() {
-		return val;
+	public boolean insert(final char character, final int level) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean insert(final char character, final int level) {
-		throw new UnsupportedOperationException();
+	public boolean isLeaf() {
+		return true;
 	}
 
 	@Override

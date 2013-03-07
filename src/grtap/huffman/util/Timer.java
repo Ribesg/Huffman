@@ -2,6 +2,7 @@ package grtap.huffman.util;
 
 import java.text.DecimalFormat;
 
+// Little tool for timings
 public class Timer {
 
 	private static final DecimalFormat	f	= new DecimalFormat("#0.00");

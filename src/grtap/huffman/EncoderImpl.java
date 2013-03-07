@@ -68,7 +68,8 @@ public class EncoderImpl implements Encoder {
 		sortedCodes = huffmanTree.getCharacterCodes();
 		printTime();
 
-		if (sortedCodes.size() == 1) { // TODO: maybe create a tree with one node and one leaf ?
+		if (sortedCodes.size() <= 1) {
+			// With one letter we could create a Tree with one son...
 			throw new IllegalArgumentException("File content not supported");
 		}
 		// Write the Tree to the file
@@ -130,6 +131,8 @@ public class EncoderImpl implements Encoder {
 	}
 
 	private void writeTree() throws IOException {
+		// First build a char[] to be written so that we can store the string length
+		// before storing the string itself
 		try (final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
 			final char[] treeString = new char[512];
 			int treeStringLength = 0;

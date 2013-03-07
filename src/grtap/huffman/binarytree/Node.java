@@ -8,12 +8,9 @@ import java.util.TreeSet;
 // This abstract class represents any Node in the Tree
 public abstract class Node {
 
-	protected Type		type;
+	// Used when the Decoder rebuild the Tree
+	// isFull == True <=> We can't add any character below this node
 	protected boolean	isFull	= false;
-
-	protected enum Type {
-		LEAF, BINARYNODE,
-	}
 
 	// Force subclasses to implement equals
 	@Override
@@ -23,13 +20,9 @@ public abstract class Node {
 	@Override
 	public abstract int hashCode();
 
-	public boolean isLeaf() {
-		return type == Type.LEAF;
-	}
+	public abstract boolean isLeaf();
 
 	public abstract int height();
-
-	public abstract char getLeftChar();
 
 	// Following methods are common to all Node
 	// To have a clear code without tons of casts

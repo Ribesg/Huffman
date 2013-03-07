@@ -49,10 +49,10 @@ public class DecoderImpl implements Decoder {
 				+ "\"");
 		totalTimer = new Timer().start();
 
-		// first, we get the codes for each character
+		// First, we get the codes for each character
 		getCodes();
 
-		// then we read the file and translate
+		// Then we read the file and translate
 		printMessage("Decompressing " + sourceFile.getFileName() + "... ");
 		try (final FileInputStream reader = new FileInputStream(sourceFile.toFile());
 				final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
@@ -67,6 +67,7 @@ public class DecoderImpl implements Decoder {
 
 			int lengthByte;
 			lengthByte = reader.read(readBuffer);
+			// First loops to treat the major part of the file
 			while (lengthByte == readBuffer.length) {
 				for (final byte b : readBuffer) { // read each byte in file
 					for (int i = Byte.SIZE - 1; i >= 0; i--) {
@@ -84,7 +85,7 @@ public class DecoderImpl implements Decoder {
 				}
 				lengthByte = reader.read(readBuffer);
 			}
-			// treat remaining bytes
+			// Treat remaining bytes - 2
 			byte b;
 			for (int bPos = 0; bPos < lengthByte - 2; bPos++) {
 				b = readBuffer[bPos];
@@ -101,6 +102,8 @@ public class DecoderImpl implements Decoder {
 					}
 				}
 			}
+			// Treat the final bytes : the last one is in fact the size
+			// of the real lastByte.
 			final byte lastByte = readBuffer[lengthByte - 2];
 			final byte lastUsedBitInLastByte = readBuffer[lengthByte - 1];
 			for (int i = Byte.SIZE - 1; i >= lastUsedBitInLastByte; i--) {
