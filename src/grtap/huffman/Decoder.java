@@ -17,6 +17,8 @@ import java.util.TreeSet;
 
 public class Decoder {
 
+    private final static int                        BUFFER_SIZE = 2048;
+
     private int                                     treeLength;
     private final Path                              from;
     private final Path                              to;
@@ -46,21 +48,22 @@ public class Decoder {
 
         try (final FileInputStream reader = new FileInputStream(from.toFile()); final BufferedWriter writer = Files.newBufferedWriter(to, CHARSET)) {
 
-            char[] writeBuffer = new char[8192]; // TODO:
-            byte[] readBuffer = new byte[1024];
+            char[] writeBuffer = new char[BUFFER_SIZE * 8]; // TODO:
+            byte[] readBuffer = new byte[BUFFER_SIZE];
             int writeBufferPos = 0;
             Character curChar;
             BitArray curCode = new BitArray();
 
-            reader.skip(treeLength+1); // position the reader after the tree
+            reader.skip(treeLength + 1); // position the reader after the tree
 
             int lengthByte;
             lengthByte = reader.read(readBuffer);
             while (lengthByte == readBuffer.length) {
                 for (byte b : readBuffer) { // read each byte in file
-                    for (int i = Byte.SIZE-1; i >=0; i--) {
+                    for (int i = Byte.SIZE - 1; i >= 0; i--) {
                         curCode.add((b & 1 << i) == 0 ? 0 : 1); // add each bit to current code
-                        if ((curChar = codes.get(curCode.length()-1).get(curCode)) != null) { // if current code is a valid one, i.e. present in our HashMap List
+                        curChar = codes.get(curCode.length() - 1).get(curCode);
+                        if (curChar != null) { // if current code is a valid one, i.e. present in our HashMap List
                             writeBuffer[writeBufferPos++] = curChar; // add it to the writeBuffer
                             curCode.clear();
                             if (writeBufferPos == 8192) {
@@ -72,20 +75,36 @@ public class Decoder {
                 }
                 lengthByte = reader.read(readBuffer);
             }
-            //treat remaining bytes
-            for(int bPos=0;bPos<lengthByte ;bPos++){
-                byte b = readBuffer[bPos];
-            	for(int i = Byte.SIZE-1; i >= 0; i--){
-            		curCode.add((b & 1 << i) == 0 ? 0 : 1);
-            		 if ((curChar = codes.get(curCode.length()-1).get(curCode)) != null) { 
-                         writeBuffer[writeBufferPos++] = curChar; 
-                         curCode.clear();
-                         if (writeBufferPos == 8192) {
-                             writer.write(writeBuffer);
-                             writeBufferPos = 0; 
-                         }
-                     }
-            	}
+            // treat remaining bytes
+            byte b;
+            for (int bPos = 0; bPos < lengthByte - 2; bPos++) {
+                b = readBuffer[bPos];
+                for (int i = Byte.SIZE - 1; i >= 0; i--) {
+                    curCode.add((b & 1 << i) == 0 ? 0 : 1);
+                    curChar = codes.get(curCode.length() - 1).get(curCode);
+                    if (curChar != null) {
+                        writeBuffer[writeBufferPos++] = curChar;
+                        curCode.clear();
+                        if (writeBufferPos == 8192) {
+                            writer.write(writeBuffer);
+                            writeBufferPos = 0;
+                        }
+                    }
+                }
+            }
+            byte lastByte = readBuffer[lengthByte - 2];
+            byte lastUsedBitInLastByte = readBuffer[lengthByte - 1];
+            for (int i = Byte.SIZE - 1; i >= lastUsedBitInLastByte; i--) {
+                curCode.add((lastByte & 1 << i) == 0 ? 0 : 1);
+                curChar = codes.get(curCode.length() - 1).get(curCode);
+                if ((curChar) != null) {
+                    writeBuffer[writeBufferPos++] = curChar;
+                    curCode.clear();
+                    if (writeBufferPos == 8192) {
+                        writer.write(writeBuffer);
+                        writeBufferPos = 0;
+                    }
+                }
             }
             writer.write(writeBuffer, 0, writeBufferPos); // write remaining chars
         }
@@ -111,12 +130,12 @@ public class Decoder {
             }
 
             codes = new ArrayList<HashMap<BitArray, Character>>(length);
-            for(int i = 0; i < length; i++){
-            	codes.add(new HashMap<BitArray,Character>());
+            for (int i = 0; i < length; i++) {
+                codes.add(new HashMap<BitArray, Character>());
             }
 
             for (CharacterCode c : characterCodes) {
-                codes.get(c.getCode().length()-1).put(c.getCode(), c.getChar());
+                codes.get(c.getCode().length() - 1).put(c.getCode(), c.getChar());
             }
         }
     }
