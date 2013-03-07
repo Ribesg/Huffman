@@ -35,6 +35,9 @@ public class Tree implements Comparable<Tree> {
 		final LinkedHashMap<Character, Integer> map = new LinkedHashMap<Character, Integer>();
 		for (int i = 0; i < stringRepresentation.length; i += 2) {
 			map.put(stringRepresentation[i], (int) stringRepresentation[i + 1]);
+			if((int)stringRepresentation[i+1]==0){
+				throw new IllegalArgumentException("Malformed File");
+			}
 		}
 		// Insert each character into the Tree
 		root = new BinaryNode(null, null);
