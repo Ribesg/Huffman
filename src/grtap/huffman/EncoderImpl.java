@@ -140,11 +140,11 @@ public class EncoderImpl implements Encoder {
 				treeString[treeStringLength++] = cur.getChar();
 				treeString[treeStringLength++] = (char) cur.getCode().length();
 			}
-			if(treeStringLength > 0xff){ //tree length will not always be less than 255, we have to write it on two bytes
-				int msb = (treeStringLength & 0xff00) >> Byte.SIZE;
+			if (treeStringLength > 0xff) { //tree length will not always be less than 255, we have to write it on two bytes
+				final int msb = (treeStringLength & 0xff00) >> Byte.SIZE;
 				treeStringLength &= 0x00ff;
 				writer.write(msb);
-			}else{
+			} else {
 				writer.write(0);
 			}
 			writer.write(treeStringLength);
@@ -176,8 +176,7 @@ public class EncoderImpl implements Encoder {
 
 	private void handleOneCharFile(final char c) {
 		huffmanTree = Tree.newMonoCharacterHuffmanTree(c);
-		sortedCodes = new TreeSet<CharacterCode>();
-		sortedCodes.add(new CharacterCode(c, new BitArray().add(0)));
+		sortedCodes = huffmanTree.getCharacterCodes();
 	}
 
 	// Set a int[256] with the number of occurences of each char
