@@ -68,9 +68,10 @@ public class EncoderImpl implements Encoder {
 		sortedCodes = huffmanTree.getCharacterCodes();
 		printTime();
 
-		if (sortedCodes.size() <= 1) {
-			// With one letter we could create a Tree with one son...
-			throw new IllegalArgumentException("File content not supported");
+		if (sortedCodes.size() == 0) {
+			throw new IllegalArgumentException("Why do you want to compress an empty file ?");
+		} else if (sortedCodes.size() == 1) {
+			handleOneCharFile(sortedCodes.pollFirst().getChar());
 		}
 		// Write the Tree to the file
 		printMessage("Writing tree string representation as output file header... ");
@@ -165,6 +166,12 @@ public class EncoderImpl implements Encoder {
 
 		// There is only our final tree left
 		huffmanTree = treeSet.pollFirst();
+	}
+
+	private void handleOneCharFile(final char c) {
+		huffmanTree = Tree.newMonoCharacterHuffmanTree(c);
+		sortedCodes = new TreeSet<CharacterCode>();
+		sortedCodes.add(new CharacterCode(c, new BitArray().add(0)));
 	}
 
 	// Set a int[256] with the number of occurences of each char

@@ -11,8 +11,8 @@ import java.util.TreeSet;
 // Internal nodes have no value but 2 sons
 // Leaves have a value and no sons
 public class Tree implements Comparable<Tree> {
-	protected final Node	root;
-	protected final int		priority;	// Used in the Huffman Tree building from 1-char-trees
+	protected Node		root;
+	protected final int	priority;	// Used in the Huffman Tree building from 1-char-trees
 
 	// Build a Tree with one value
 	public Tree(final char val, final int prior) {
@@ -41,6 +41,20 @@ public class Tree implements Comparable<Tree> {
 		for (final Entry<Character, Integer> e : map.entrySet()) {
 			root.insert(e.getKey(), e.getValue());
 		}
+	}
+
+	private Tree() {
+		root = null;
+		priority = 0;
+	}
+
+	// Very special case : The file contains only one char value
+	// Ex : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+	public static Tree newMonoCharacterHuffmanTree(final char c) {
+		final Tree res = new Tree();
+		// Here the second char will never be used
+		res.root = new BinaryNode(new Leaf(c), new Leaf(' '));
+		return res;
 	}
 
 	// Returns the character codes for each character in Tree
