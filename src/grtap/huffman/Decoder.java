@@ -73,7 +73,8 @@ public class Decoder {
                 lengthByte = reader.read(readBuffer);
             }
             //treat remaining bytes
-            for(byte b : readBuffer){
+            for(int bPos=0;bPos<lenghtByte;bPos++){
+                byte b = readBuffer[bPos];
             	for(int i = Byte.SIZE-1; i >= 0; i--){
             		curCode.add((b & 1 << i) == 0 ? 0 : 1);
             		 if ((curChar = codes.get(curCode.length()-1).get(curCode)) != null) { 
