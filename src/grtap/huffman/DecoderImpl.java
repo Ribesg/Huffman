@@ -63,7 +63,7 @@ public class DecoderImpl implements Decoder {
 			Character curChar;
 			final BitArray curCode = new BitArray();
 
-			reader.skip(treeLength + 1); // position the reader after the tree
+			reader.skip(treeLength + 2); // position the reader after the tree
 
 			int lengthByte;
 			lengthByte = reader.read(readBuffer);

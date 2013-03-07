@@ -86,7 +86,7 @@ public class EncoderImpl implements Encoder {
 				final FileOutputStream writer = new FileOutputStream(destinationFile.toFile(), true)) {
 			final char[] readBuffer = new char[8192];
 			// Char size = 1 byte
-			// CharacterCodes max length : 256 differents chars, max length = log2(256)=8 TODO ?
+			// CharacterCodes max length : 256 differents chars, max length = 256
 			// So a buffer with a size equals to the char buffer is enough
 			final BitArray writeBuffer = new BitArray(8192);
 			int length;
@@ -136,7 +136,7 @@ public class EncoderImpl implements Encoder {
 		// before storing the string itself
 		try (final BufferedWriter writer = Files.newBufferedWriter(destinationFile, CHARSET)) {
 			final char[] treeString = new char[512];
-			int treeStringLength = 1;
+			int treeStringLength = 0;
 			for (final CharacterCode cur : sortedCodes) {
 				treeString[treeStringLength++] = cur.getChar();
 				treeString[treeStringLength++] = (char) cur.getCode().length();
